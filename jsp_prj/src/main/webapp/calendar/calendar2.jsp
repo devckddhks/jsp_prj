@@ -136,6 +136,15 @@ td {
 	$(function() {
 
 	}); // ready
+	
+	function moveCal(month, year) {
+		// 입력된 값을 hidden에 설정하고
+		$("#month").val(month);
+		$("#year").val(year);
+		
+		// form에 submit을 수행
+		$("calFrm").submit();
+	}
 </script>
 </head>
 
@@ -181,10 +190,14 @@ td {
 				boolean toDayFlag = selectDay.toString().equals(toDay.toString());
 				
 				%>
+				<form action="calendar2.jsp" method="post" id="calFrm">
+					<input type="hidden" name="year" id="year">
+					<input type="hidden" name="month" id="month">
+				</form>
 				<div id="calHeader">
-					<a href="calendar.jsp?month=<%= (nowMonth - 1) == 0 ? 12 : nowMonth - 1 %>&year=<%= (nowMonth - 1) == 0 ? nowYear - 1 : nowYear %>" title="이전 월">&lt;&lt;</a> 
-					<a href="calendar.jsp" title=""><span class="calTitle"><%=nowYear%>.<%=nowMonth%></span></a> <a
-						href="calendar.jsp?month=<%= (nowMonth + 1) == 13 ? 1 : nowMonth + 1 %>&year=<%= (nowMonth + 1) == 13 ? nowYear + 1 : nowYear %>" title="다음 월">&gt;&gt;</a>
+					<a href="#void" onclick="moveCal(<%= (nowMonth - 1) == 0 ? 12 : nowMonth - 1 %>, <%= (nowMonth - 1) == 0 ? nowYear - 1 : nowYear %>)" title="이전 월">&lt;&lt;</a> 
+					<a href="calendar2.jsp" title=""><span class="calTitle"><%=nowYear%>.<%=nowMonth%></span></a> <a
+						href="#void" onclick="moveCal(<%= (nowMonth + 1) == 13 ? 1 : nowMonth + 1 %>, <%= (nowMonth + 1) == 13 ? nowYear + 1 : nowYear %>)" title="다음 월">&gt;&gt;</a>
 				</div>
 
 				<div id="calContainer">
