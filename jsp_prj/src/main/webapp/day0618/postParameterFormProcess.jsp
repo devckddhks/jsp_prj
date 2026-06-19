@@ -231,14 +231,15 @@
 					<div>
 						<% 
 						// request가 사용되기 전에 읽어들이는 charset을 한꺼번에 변경할 수 있다.
+						// request.setCharacterEncoding("UTF-8");
 						
 						// getParameterFormProcess.jsp?text=네임+텍스트&pass=어짜피안보여&gender=F&agree=Y&tel=016&ta=텍스트에어리어~~
 						String text = request.getParameter("text");
 						request.setCharacterEncoding("UTF-8");
-						// text = new String(text.getBytes("8859_1"), "UTF-8");
+						text = new String(text.getBytes("8859_1"), "UTF-8");
 						
 						String pass = request.getParameter("pass");
-						// pass = new String(pass.getBytes("8859_1"), "UTF-8");
+						pass = new String(pass.getBytes("8859_1"), "UTF-8");
 						
 						String gender = request.getParameter("gender");
 						// checkbox는 확인하지 않으면 null이 입력된다.
@@ -247,7 +248,7 @@
 						String tel = request.getParameter("tel");
 						
 						String ta = request.getParameter("ta");
-						// ta = new String(ta.getBytes("8859_1"), "UTF-8");
+						ta = new String(ta.getBytes("8859_1"), "UTF-8");
 						%>
 						<strong>text </strong><%= text %><br>
 						<strong>pass </strong><%= pass %><br>
