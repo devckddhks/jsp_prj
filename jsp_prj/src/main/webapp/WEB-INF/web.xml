@@ -11,4 +11,15 @@
     <welcome-file>default.htm</welcome-file>
     <welcome-file>default.xhtml</welcome-file>
   </welcome-file-list>
+  
+  <!-- 에러 페이지 설정 : project에 모든 JSP에서 에러가 발생하면 해당 페이지로 이동한다. -->
+ <!--  <error-page>
+  	<error-code>500</error-code>
+  	<location>/error/err_500.jsp</location>
+  </error-page>
+  
+  <error-page>
+  	<error-code>404</error-code>
+  	<location>/error/err_404.jsp</location>
+  </error-page> -->
 </web-app>

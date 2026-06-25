@@ -1,11 +1,11 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ include file="../../include/siteProperty.jsp" %>
 <!DOCTYPE html>
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>회원가입 정보입력 | BallPick</title>
-<link rel="stylesheet" href="<%=request.getContextPath()%>/kr.user.member/member.css">
 <script src="https://t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
 </head>
 <body>
@@ -19,12 +19,8 @@
             <div class="member-step"><span class="member-step-number">3</span>가입완료</div>
         </div>
 
-        <% if (request.getAttribute("errorMessage") != null) { %>
-        <div class="member-error"><%=request.getAttribute("errorMessage")%></div>
-        <% } %>
-
         <form id="joinForm" method="post"
-              action="<%=request.getContextPath()%>/day0622/memberJoin/joinComplete.jsp" novalidate>
+              action="${ commonURL }/day0622/memberJoin/joinComplete.jsp" novalidate>
             <input type="hidden" name="smsReceiveYN" value="1">
             <input type="hidden" name="emailReceiveYN" value="1">
             <input type="hidden" id="codeChecked" value="N">
@@ -113,7 +109,7 @@
             <div id="clientError" class="member-error" hidden></div>
             <div class="member-actions">
                 <a class="member-button member-button-light"
-                   href="<%=request.getContextPath()%>/member/join-agree.do">이전</a>
+                   href="${ CommonURL }/member/join-agree.do">이전</a>
                 <button class="member-button" type="submit">가입하기</button>
             </div>
         </form>

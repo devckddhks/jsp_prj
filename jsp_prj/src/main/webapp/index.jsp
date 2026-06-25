@@ -1,5 +1,6 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" info="EL의 사용" isELIgnored="false" %>
-
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ include file="../include/siteProperty.jsp"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <!DOCTYPE html>
 <html lang="en" data-bs-theme="auto">
 <head>
@@ -9,8 +10,9 @@
 <meta name="generator" content="Astro v5.13.2">
 <title>Carousel Template · Bootstrap v5.3</title>
 <meta name="theme-color" content="#712cf9">
-<jsp:include page="../include/external_file.jsp" />
-<%-- <%@ include file="../include/external_file.jsp" %> --%>
+<%-- <jsp:include page="../include/external_file.jsp"/> --%>
+<%--<%@ include file="../include/external_file.jsp" %>--%>
+<c:import url="${ CommonURL }/include/external_file.jsp" />
 <style>
 .bd-placeholder-img {
 	font-size: 1.125rem;
@@ -144,58 +146,35 @@
 	</div>
 	<header data-bs-theme="dark">
 		<nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
-			<jsp:include page="../fragments/nav_bar.jsp" />
+			<%-- <jsp:include page="../fragments/nav_bar.jsp"/> --%>
+			<c:import url="${ CommonURL }/fragments/nav_bar.jsp" />
 		</nav>
 	</header>
 	<main>
 		<div id="myCarousel" class="carousel slide mb-6" data-bs-ride="carousel">
-			<jsp:include page="../fragments/carousel.jsp" />
+			<%-- <jsp:include page="../fragments/carousel.jsp"/> --%>
+			<c:import url="${ CommonURL }/fragments/carousel.jsp" />
 		</div>
 		<!-- Marketing messaging and featurettes
   ================================================== -->
 		<!-- Wrap the rest of the page in another container to center all the content. -->
 		<div class="container marketing">
-			<%
-			String name = "테스트";
-			int age = 20;
-			%>
-			<div>
-				<strong>EL에서는 변수에 직접 접근을 할 수 없다.</strong><br> 이름 : <span>${ name }</span><br> 나이 : <span>${ age }</span>
-			</div>
-			<%
-			// 1. 변수를 선언
-			int year = 2026;
-			int month = 6;
-			int day = 23;
-			int hour = 9;
-
-			// 2. 변수의 값을 EL에서 사용하기 위해 scope 객체에 속성으로 할당한다.
-			pageContext.setAttribute("year", year);
-			request.setAttribute("month", month);
-			session.setAttribute("day", day);
-			application.setAttribute("hour", hour);
-			pageContext.setAttribute("day", 51);
-
-			boolean flag = false;
-			pageContext.setAttribute("flag", flag);
-			%>
-
-			pageScope : <span>${ pageScope.year } ${ year }</span><br> requestScope : <span>${ requestScope.month } ${ month }</span><br> sessionScope : <span>${ sessionScope.day } ${ day }</span><br>
-			<!-- scope 객체의 이름과 동일한 이름이 들어가 있을 때 scope의 범위가 작은 쪽의 변수가 들어간다. -->
-			applicationScope : <span>${ applicationScope.hour } ${ hour }</span><br>
-			<div>
-				<strong>연산자</strong><br> 단항 : ${ flag } / ${ !flag } / ${ not flag } <br> 산술 : ${ year } / ${ year + 1 } / ${ year mod 12 } <br>
-				<%-- <%-- ${ year<<2 }<br> EL에서 제공하지 않는 연산자는 사용할 수 없다. --%>
-				<%-- 관계 : ${ year > month } / ${ year gt month } <br> ${ year < month } / ${ year lt month } <br> ${ year >= month } / ${ year ge month } <br> ${ year le month } / ${ year le month } <br> ${ year == month } / ${ year eq month } <br>
-				<!-- EL에는 문자가 존재하지 않는다. 문자열만 존재. -->
-				${ "자바" == '자바' } / ${ "자바" le '자바' } <br> ${ year != month } / ${ year ne month } <br> 논리 : ${ year > month && day > month } / ${ year gt month and day gt month } <br> ${ year > month || day > month } / ${ year gt month or day gt month } <br> 삼항 : ${ year % 2 == 0 ? "짝수" : '홀수' } ( ${ year mod 2 eq 0 ? "짝수" : '홀수' }) --%> --%>
-			</div>
+			<!-- Three columns of text below the carousel -->
+			<%-- <jsp:include page="../fragments/bestProduct.jsp"/> --%>
+			<c:import url="${ CommonURL }/fragments/bestProduct.jsp" />
+			<!-- /.row -->
+			<!-- START THE FEATURETTES -->
+			<%-- <jsp:include page="../fragments/productList.jsp"/> --%>
+			<c:import url="${ CommonURL }/fragments/productList.jsp" />
+			<!-- /END THE FEATURETTES -->
 		</div>
 		<!-- /.container -->
 		<!-- FOOTER -->
 		<footer class="container">
-			<jsp:include page="../fragments/footer.jsp" />
+			<%-- <jsp:include page="../fragments/footer.jsp"/> --%>
+			<c:import url="${ CommonURL }/fragments/footer.jsp" />
 		</footer>
 	</main>
+	<script src="${ CommonURL }/common/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" class="astro-vvvwv3sm"></script>
 </body>
 </html>
