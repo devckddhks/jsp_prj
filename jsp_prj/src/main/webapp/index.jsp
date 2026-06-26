@@ -1,3 +1,4 @@
+<%@page import="kr.co.sist.user.member.MemberDTO"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ include file="../include/siteProperty.jsp"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
@@ -146,8 +147,9 @@
 	</div>
 	<header data-bs-theme="dark">
 		<nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
-			<%-- <jsp:include page="../fragments/nav_bar.jsp"/> --%>
-			<c:import url="${ CommonURL }/fragments/nav_bar.jsp" />
+			<jsp:include page="/fragments/nav_bar.jsp"/>
+
+			<%-- <c:import url="${ CommonURL }/fragments/nav_bar.jsp" /> --%>
 		</nav>
 	</header>
 	<main>

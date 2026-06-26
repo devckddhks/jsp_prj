@@ -25,7 +25,7 @@ public class SiteProperty {
 		try {
 			con = gc.getConn("dbcp");
 
-			String selectSiteProperty = "select protocol, server_name, server_port, context_root, upload_dir, api_key, site_info from site_property where type = '1'";
+			String selectSiteProperty = "select protocol, server_name, server_port, context_root, upload_dir, api_key, site_info from site_property where type = '2'";
 
 			pstmt = con.prepareStatement(selectSiteProperty);
 
