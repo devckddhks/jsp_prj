@@ -1,4 +1,3 @@
-<%@page import="kr.co.sist.user.member.MemberDTO"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ include file="../include/siteProperty.jsp"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
@@ -104,9 +103,84 @@
 	color: red;
 }
 </style>
+
 <script type="text/javascript">
-	// var obj = new XMLHttpRequest();
-	// alert(obj);
+	$(function() {
+		$("#btnHtml").click(requestHtml);
+		$("#btnText").click(requestText);
+		$("#btnXml").click(requestXml);
+		$("#btnJson").click(requestJson);
+	});
+
+	function requestHtml() {
+		$.ajax({
+			url : "responseHtml.jsp",
+			type : "get",
+			data : "name=테스트&age=20",
+			error : function(xhr) {
+				console.log(xhr.status + " / " + xhr.statusText);
+			},
+			success : function(data) {
+				$("#output").html(data);
+			}
+		});
+	}
+
+	function requestText() {
+		$.ajax({
+			url : "responseText.jsp",
+			dataType : "text",
+			error : function(xhr) {
+				console.log(xhr.status + " / " + xhr.statusText);
+			},
+			success : function(data) {
+				var arr = data.split(",");
+				var output = "<ul>";
+
+				var selNode = $("#subject")[0];
+
+				$.each(arr, function(i, ele) {
+					output += "<li>" + ele + "</li>";
+					selNode.options[i] = new Option(ele + "과목", ele);
+				});
+
+				output += "</ul>";
+
+				$("#output").html(output);
+			}
+		});
+	}
+
+	function requestXml() {
+		$.ajax({
+			url : "responseXml.jsp",
+			dataType : "XML",
+			error : function(xhr) {
+				console.log(xhr.status + " / " + xhr.statusText);
+			},
+			success : function(xmlDoc) {
+				$("#output")
+						.html(
+								"<strong>" + $(xmlDoc).find("msg").text()
+										+ "</strong>");
+			}
+		});
+	}
+
+	function requestJson() {
+		$.ajax({
+			url : "http://192.168.10.82/jsp_prj/day0629/testJsonObj.jsp",
+			dataType : "xml",
+			error : function(xhr) {
+				console.log(xhr.status + " / " + xhr.statusText);
+			},
+			success : function(jsonObj) {
+				$("#output").html(
+						"<strong>" + jsonObj.name + "</strong><br>"
+								+ jsonObj.age + "/" + jsonObj.addr);
+			}
+		});
+	}
 </script>
 </head>
 <body>
@@ -151,29 +225,19 @@
 	</div>
 	<header data-bs-theme="dark">
 		<nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
-			<jsp:include page="/fragments/nav_bar.jsp"/>
-
-			<%-- <c:import url="${ CommonURL }/fragments/nav_bar.jsp" /> --%>
+			<%-- <jsp:include page="../fragments/nav_bar.jsp"/> --%>
+			<c:import url="${ CommonURL }/fragments/nav_bar.jsp" />
 		</nav>
 	</header>
 	<main>
-		<div id="myCarousel" class="carousel slide mb-6" data-bs-ride="carousel">
-			<%-- <jsp:include page="../fragments/carousel.jsp"/> --%>
-			<c:import url="${ CommonURL }/fragments/carousel.jsp" />
+		<div style="margin-top: 30px;">
+			<h3>AJAX 요청에 대한 응답</h3>
+			<input type="button" class="btn btn-success btn-sm" value="HTML 요청" id="btnHtml"> <input type="button" class="btn btn-primary btn-sm" value="TEXT 요청" id="btnText"> <input type="button" class="btn btn-warning btn-sm" value="XML 요청" id="btnXml"> <input type="button" class="btn btn-info btn-sm" value="JSON 요청" id="btnJson">
 		</div>
-		<!-- Marketing messaging and featurettes
-  ================================================== -->
-		<!-- Wrap the rest of the page in another container to center all the content. -->
-		<div class="container marketing">
-			<!-- Three columns of text below the carousel -->
-			<%-- <jsp:include page="../fragments/bestProduct.jsp"/> --%>
-			<c:import url="${ CommonURL }/fragments/bestProduct.jsp" />
-			<!-- /.row -->
-			<!-- START THE FEATURETTES -->
-			<%-- <jsp:include page="../fragments/productList.jsp"/> --%>
-			<c:import url="${ CommonURL }/fragments/productList.jsp" />
-			<!-- /END THE FEATURETTES -->
-		</div>
+		<select id="subject">
+			<option value="none">----과목선택----</option>
+		</select>
+		<div id="output"></div>
 		<!-- /.container -->
 		<!-- FOOTER -->
 		<footer class="container">

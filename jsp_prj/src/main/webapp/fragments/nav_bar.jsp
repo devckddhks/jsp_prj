@@ -16,12 +16,12 @@
 		
 			<c:choose>
 				<c:when test="${ empty userInfo }">
-					<a class="nav-link" aria-current="page" href="${ CommonURL }/login/loginForm.jsp" style="color: #FFF;">${ userInfo }/로그인</a> &nbsp;&nbsp; 
+					<a class="nav-link" aria-current="page" href="${ CommonURL }/login/loginForm.jsp" style="color: #FFF;">로그인</a> &nbsp;&nbsp; 
 					<a class="nav-link" aria-current="page" href="${ CommonURL }/memberJoin/joinForm.jsp" style="color: #FFF;">회원가입</a>
 				</c:when>
 
 				<c:otherwise>
-					<a class="nav-link" aria-current="page" href="#void" style="color: #FFF;"><span title="${ userInfo.name }님의 마이페이지"><c:out value="${ userInfo.id }" />님 로그인 하셨습니다.</span></a> &nbsp;&nbsp; 
+					<a class="nav-link" aria-current="page" href="${ CommonURL }/mypage/mypage.jsp" style="color: #FFF;"><span title="${ userInfo.name }님의 마이페이지"><c:out value="${ userInfo.id }" />님 로그인 하셨습니다.</span></a> &nbsp;&nbsp; 
 					<a class="nav-link" aria-current="page" href="#void" style="color: #FFF;">로그아웃</a>
 				</c:otherwise>
 			</c:choose>
