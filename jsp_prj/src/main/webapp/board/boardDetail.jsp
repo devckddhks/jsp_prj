@@ -1,7 +1,9 @@
+<%@page import="kr.co.sist.board.BoardDTO"%>
+<%@page import="kr.co.sist.board.BoardService"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ include file="../include/siteProperty.jsp"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
-<%@ include file="../include/loginCheck.jsp"%>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
 <!DOCTYPE html>
 <html lang="en" data-bs-theme="auto">
 <head>
@@ -9,11 +11,14 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="description" content="">
 <meta name="generator" content="Astro v5.13.2">
-<title>마이페이지</title>
-
+<title>글</title>
 <meta name="theme-color" content="#712cf9">
+<%-- <jsp:include page="../include/external_file.jsp"/> --%>
+<%--<%@ include file="../include/external_file.jsp" %>--%>
+<c:import url="${ CommonURL }/include/external_file.jsp" />
 
-<c:import url="${CommonURL}/include/external_file.jsp" />
+<link href="https://cdn.jsdelivr.net/npm/summernote@0.9.0/dist/summernote.min.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/summernote@0.9.0/dist/summernote.min.js"></script>
 
 <style>
 .bd-placeholder-img {
@@ -97,49 +102,70 @@
 	display: block !important
 }
 
-#프로필 디자인
-#profileWrap {
-	width: 100%;
-	min-height: 600px;
-	margin-top: 20px;
-	background-color: #FF0000
+.blue {
+	color: blue;
+}
+
+.red {
+	color: red;
 }
 </style>
-
 <script type="text/javascript">
-	$(function() {
-		//이미지 선택 버튼이 클릭
-		$("#btnPorfile").click(function() {
-			//버튼을 클릭했을 때 input type="file"을 클릭한 이벤트를 발생
-			$("#profile").click();
-		});//click
-		
-		$("#btnSearch").click(function() {
-			var param = {id: "${ userInfo.id }"};
-			
-			$.ajax({
-				url: "searchMypage.jsp",
-				data: param,
-				type: "post",
-				dataType: "json",
-				error: function(xhr) {
-					console.log(xhr.status + "/" + xhr.statusText)
-				},
-				success: function(jsonObj) {
-					$("#profileImg")[0].src = "${CommonURL}${uploadDir}/profile/" + jsonObj.profile;
-					$("#name").val(jsonObj.name);
-					$("#email").val(jsonObj.email);
-					$("#phone").val(jsonObj.phone);
-					$("#zipcode").val(jsonObj.zipcode);
-					$("#address").val(jsonObj.address);
-					$("#address2").val(jsonObj.address2);
-					$("#ip").html(jsonObj.ip);
-					$("#inputDate").html(jsonObj.inputDate);
-					
-				}
-			});
-		});
-	});//ready
+$(function() {
+	 $('#content').summernote({
+		toolbar: [
+			['style', ['bold', 'italic', 'underline', 'clear']],
+			['fontsize', ['fontsize']],
+			['color', ['color']]
+		],
+		placeholder: '자유롭게 글을 써주세요',
+		width: 400,
+		height: 300
+	 });
+	 
+	$("#btnUpdate").click(function() {
+		boardModify('u');		
+	});
+	 
+	$("#btnDelete").click(function() {
+		boardModify('d');
+	});
+});
+
+function chkNull() {
+	if($("#title").val().trim() == "") {
+		alert("제목은 필수 입력입니다");
+		return;
+	}
+}
+
+function boardModify(jobFlag) {
+	
+	var action = "deleteBoard";
+	
+	var msg = "삭제";
+	
+	if(jobFlag == 'u') {
+		action = "updateBoard";
+		msg = "수정";
+	}
+	
+	if (confirm("글을 " + msg + "하시겠습니까?")) {
+	// 폼 태그를 얻어서, action 속성을 변경하고, submit 실행
+		$("#readForm")[0].action = action + ".jsp";
+	
+		// 유효성 검증
+		if(msg == "수정") {
+			if($("#title").val().trim() == "") {
+				alert("제목은 필수 입력입니다.");
+				return;
+			}
+		}
+	
+		$("#readForm").submit();
+	}
+	
+}
 </script>
 </head>
 <body>
@@ -184,89 +210,92 @@
 	</div>
 	<header data-bs-theme="dark">
 		<nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
-			<c:import url="/fragments/nav_bar.jsp" />
+			<%-- <jsp:include page="../fragments/nav_bar.jsp"/> --%>
+			<c:import url="../fragments/nav_bar.jsp" />
 		</nav>
 	</header>
 	<main>
-
-		<!-- /.container -->
-		<div id="profileWrap" style="margin-top: 50px;">
-			<form action="mypageProcess.jsp" method="post" id="mypageForm" name="mypageForm">
-				<table style="margin: 0px auto">
+		<div id="divWriteForm"  style="margin-top: 20px;">
+			<%
+			String paramNum = request.getParameter("num");
+			
+			int num = 0;
+			
+			if(paramNum != null) {
+				
+				try{
+					num = Integer.parseInt(paramNum);
+				} catch (NumberFormatException nfe) {
+					nfe.printStackTrace();
+					
+					response.sendRedirect("../error/err_500.jsp");
+					return;
+				}
+			}
+			
+			BoardService bs = new BoardService();
+			pageContext.setAttribute("bDTO", bs.searchBoardDetail(num));
+			// 검색한 글의 cnt를 증가
+			boolean cntFlag = false;
+			
+			if(session.getAttribute("cntFlag" + paramNum) != null) {
+				cntFlag = (boolean) session.getAttribute("cntFlag" + paramNum);
+			}
+			
+			if(!cntFlag) {
+				bs.modifyCnt(num);
+				cntFlag = true;
+				session.setAttribute("cntFlag" + paramNum, cntFlag);
+			}
+			
+			
+			%>
+			<form name="readForm" method="post" id="readForm">
+				<input type="hidden" name="num" value="${ bDTO.num }">
+				<input type="hidden" name="currentPage" value="${ param.currentPage }">
+				<table>
 					<tr>
-						<td style="vertical-align: top; width: 300px">
-							<img id="profileImg" src="${ CommonURL }${ uploadDir }/profile/default_profile.png" style="border-radius: 150px; width: 150px; height: 150px;" /><br> <input type="file" name="profile" id="profile" style="display: none;" /> <input type="button" value="이미지업로드" class="btn btn-success btn-sm" id="btnPorfile" />
-						</td>
-						<td>
-							<h3>마이페이지- 정보수정</h3>
-							<table>
-								<tr>
-									<td>아이디</td>
-									<td>
-										<strong><c:out value="${ userInfo.id }" /></strong> <input type="button" value="조회" class="btn btn-warning btn-sm" id="btnSearch" />
-									</td>
-								</tr>
-								<tr>
-									<td>이름</td>
-									<td>
-										<input type="text" name="name" id="name"  value="" readonly="readonly">
-									</td>
-								</tr>
-								<tr>
-									<td>이메일</td>
-									<td>
-										<input type="text" name="email" id="email" value="">
-									</td>
-								</tr>
-								<tr>
-									<td>전화번호</td>
-									<td>
-										<input type="text" name="phone" id="phone" value="">
-									</td>
-								</tr>
-								<tr>
-									<td>우편번호</td>
-									<td>
-										<input type="text" name="zipcode" id="zipcode" value="" style="width: 70px" readonly="readonly"> <input type="button" value="검색" class="btn btn-success btn-sm" />
-									</td>
-								</tr>
-								<tr>
-									<td>주소</td>
-									<td>
-										<input type="text" name="address" id="address" value="" style="width: 300px" readonly="readonly">
-									</td>
-								</tr>
-								<tr>
-									<td>상세주소</td>
-									<td>
-										<input type="text" name="address2" id="address2" value="" style="width: 300px" />
-									</td>
-								</tr>
-								<tr>
-									<td>가입 ip주소</td>
-									<td><span id="ip"></span></td>
-								</tr>
-								<tr>
-									<td>가입일</td>
-									<td><span id="inputDate"></span></td>
-								</tr>
-								<tr>
-									<td colspan="2" align="center">
-										<input type="button" value="변경" class="btn btn-warning btn-sm" id="btnUpdate" />
-									</td>
-								</tr>
-
-							</table>
+						<th colspan="2" style="text-align: center;"><h3>아무말 대잔치 글 읽기</h3></th>
+					</tr>
+					<tr>
+						<td width="120px">제목</td>
+						<td><input type="text" name="title" id="title" style="width: 400px;" value="${ bDTO.title }"></td>
+					</tr>
+					<tr>
+						<td>내용</td>
+						<td><textarea name="content" id="content" style="width: 400px; height: 300px; resize: none; overflow: scroll;"><c:out value="${ bDTO.content }" escapeXml="true"/></textarea></td>
+					</tr>
+					<tr>
+						<td>작성자</td>
+						<td><c:out value="${ bDTO.id }님"/></td>
+					</tr>
+					<tr>
+						<td>ip</td>
+						<td><c:out value="${ bDTO.ip }" /></td>
+					</tr>
+					<tr>
+						<td>작성일</td>
+						<td><fmt:formatDate value="${ bDTO.inputDate }" pattern="yyyy-MM-dd EEEE kk:mm:ss" /></td>
+					</tr>
+					<tr>
+						<td colspan="2" style="text-align: center;">
+							<c:if test="${ userInfo.id eq bDTO.id }">
+								<input type="button" value="글수정" class="btn btn-primary btn-sm" id="btnUpdate">
+								<input type="button" value="글삭제" class="btn btn-success btn-sm" id="btnDelete">
+							</c:if>
+							<a href="boardList.jsp?currentPage=${ param.currentPage }" class="btn btn-warning btn-sm">리스트</a>
 						</td>
 					</tr>
 				</table>
 			</form>
 		</div>
+		<!-- /.container -->
 		<!-- FOOTER -->
 		<footer class="container">
-			<c:import url="${CommonURL}/fragments/footer.jsp" />
+			<%-- <jsp:include page="../fragments/footer.jsp"/> --%>
+			<c:import url="${ CommonURL }/fragments/footer.jsp" />
 		</footer>
 	</main>
-	<script src="${CommonURL}/common/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" class="astro-vvvwv3sm"></script>
+	<script src="${ CommonURL }/common/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" class="astro-vvvwv3sm"></script>
 </body>
 </html>

@@ -7,7 +7,7 @@
 <%@ include file="../include/siteProperty.jsp"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%
-String password = "1234";
+String password = "010-1234-5678";
 
 // 1. 알고리즘을 설정하여 객체를 얻기 
 MessageDigest md = MessageDigest.getInstance("SHA-1");
@@ -33,10 +33,10 @@ String sha2 = DataEncryption.messageDigest("SHA-1", password);
 <%=sha2%>
 <br>
 <%
-String key = "a123456789012345";
+String key = "a012345678912345";
 DataEncryption de = new DataEncryption(key);
 
-String name = "테스트";
+String name = "010-1234-5678";
 String encryption = de.encrypt(name);
 
 DataDecryption dd = new DataDecryption(key);

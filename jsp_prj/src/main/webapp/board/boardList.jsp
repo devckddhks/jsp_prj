@@ -1,7 +1,10 @@
+<%@page import="kr.co.sist.board.BoardDTO"%>
+<%@page import="java.util.List"%>
+<%@page import="kr.co.sist.board.BoardService"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ include file="../include/siteProperty.jsp"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
-<%@ include file="../include/loginCheck.jsp"%>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <!DOCTYPE html>
 <html lang="en" data-bs-theme="auto">
 <head>
@@ -9,12 +12,11 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="description" content="">
 <meta name="generator" content="Astro v5.13.2">
-<title>마이페이지</title>
-
+<title>Carousel Template · Bootstrap v5.3</title>
 <meta name="theme-color" content="#712cf9">
-
-<c:import url="${CommonURL}/include/external_file.jsp" />
-
+<%-- <jsp:include page="../include/external_file.jsp"/> --%>
+<%--<%@ include file="../include/external_file.jsp" %>--%>
+<c:import url="${ CommonURL }/include/external_file.jsp" />
 <style>
 .bd-placeholder-img {
 	font-size: 1.125rem;
@@ -97,50 +99,19 @@
 	display: block !important
 }
 
-#프로필 디자인
-#profileWrap {
-	width: 100%;
-	min-height: 600px;
-	margin-top: 20px;
-	background-color: #FF0000
+.blue {
+	color: blue;
+}
+
+.red {
+	color: red;
+}
+
+a {
+	color: #858585;
+	text-decoration: none;
 }
 </style>
-
-<script type="text/javascript">
-	$(function() {
-		//이미지 선택 버튼이 클릭
-		$("#btnPorfile").click(function() {
-			//버튼을 클릭했을 때 input type="file"을 클릭한 이벤트를 발생
-			$("#profile").click();
-		});//click
-		
-		$("#btnSearch").click(function() {
-			var param = {id: "${ userInfo.id }"};
-			
-			$.ajax({
-				url: "searchMypage.jsp",
-				data: param,
-				type: "post",
-				dataType: "json",
-				error: function(xhr) {
-					console.log(xhr.status + "/" + xhr.statusText)
-				},
-				success: function(jsonObj) {
-					$("#profileImg")[0].src = "${CommonURL}${uploadDir}/profile/" + jsonObj.profile;
-					$("#name").val(jsonObj.name);
-					$("#email").val(jsonObj.email);
-					$("#phone").val(jsonObj.phone);
-					$("#zipcode").val(jsonObj.zipcode);
-					$("#address").val(jsonObj.address);
-					$("#address2").val(jsonObj.address2);
-					$("#ip").html(jsonObj.ip);
-					$("#inputDate").html(jsonObj.inputDate);
-					
-				}
-			});
-		});
-	});//ready
-</script>
 </head>
 <body>
 	<svg xmlns="http://www.w3.org/2000/svg" class="d-none"> <symbol id="check2" viewBox="0 0 16 16"> <path d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z"></path> </symbol> <symbol id="circle-half" viewBox="0 0 16 16"> <path d="M8 15A7 7 0 1 0 8 1v14zm0 1A8 8 0 1 1 8 0a8 8 0 0 1 0 16z"></path> </symbol> <symbol id="moon-stars-fill" viewBox="0 0 16 16"> <path d="M6 .278a.768.768 0 0 1 .08.858 7.208 7.208 0 0 0-.878 3.46c0 4.021 3.278 7.277 7.318 7.277.527 0 1.04-.055 1.533-.16a.787.787 0 0 1 .81.316.733.733 0 0 1-.031.893A8.349 8.349 0 0 1 8.344 16C3.734 16 0 12.286 0 7.71 0 4.266 2.114 1.312 5.124.06A.752.752 0 0 1 6 .278z"></path> <path
@@ -184,89 +155,112 @@
 	</div>
 	<header data-bs-theme="dark">
 		<nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
-			<c:import url="/fragments/nav_bar.jsp" />
+			<%-- <jsp:include page="../fragments/nav_bar.jsp"/> --%>
+			<c:import url="../fragments/nav_bar.jsp" />
 		</nav>
 	</header>
 	<main>
+		<div id="boardDiv" style="margin-top: 20px; padding: 10px;">
+		<jsp:useBean id="rDTO" class="kr.co.sist.board.RangeDTO" scope="page"/>
+		<jsp:setProperty property="*" name="rDTO"/>
+			<%
+			BoardService bs = new BoardService();
+			// 1. 총 레코드 수
+			int totalCount = 0;
+			totalCount = bs.searchTotalCount();
+			// 2. 한 화면에 보여질 게시글의 수
+			int pageScale = 10;
+			// 3. 총 페이지 수
+			int totalPage = (int) Math.ceil((double) totalCount / pageScale);
+			// 4. 선택한 페이지의 시작 번호 구하기
+			String tempPage = request.getParameter("currentPage");
+			int currentPage = 1;
 
-		<!-- /.container -->
-		<div id="profileWrap" style="margin-top: 50px;">
-			<form action="mypageProcess.jsp" method="post" id="mypageForm" name="mypageForm">
-				<table style="margin: 0px auto">
-					<tr>
-						<td style="vertical-align: top; width: 300px">
-							<img id="profileImg" src="${ CommonURL }${ uploadDir }/profile/default_profile.png" style="border-radius: 150px; width: 150px; height: 150px;" /><br> <input type="file" name="profile" id="profile" style="display: none;" /> <input type="button" value="이미지업로드" class="btn btn-success btn-sm" id="btnPorfile" />
-						</td>
-						<td>
-							<h3>마이페이지- 정보수정</h3>
-							<table>
-								<tr>
-									<td>아이디</td>
-									<td>
-										<strong><c:out value="${ userInfo.id }" /></strong> <input type="button" value="조회" class="btn btn-warning btn-sm" id="btnSearch" />
-									</td>
-								</tr>
-								<tr>
-									<td>이름</td>
-									<td>
-										<input type="text" name="name" id="name"  value="" readonly="readonly">
-									</td>
-								</tr>
-								<tr>
-									<td>이메일</td>
-									<td>
-										<input type="text" name="email" id="email" value="">
-									</td>
-								</tr>
-								<tr>
-									<td>전화번호</td>
-									<td>
-										<input type="text" name="phone" id="phone" value="">
-									</td>
-								</tr>
-								<tr>
-									<td>우편번호</td>
-									<td>
-										<input type="text" name="zipcode" id="zipcode" value="" style="width: 70px" readonly="readonly"> <input type="button" value="검색" class="btn btn-success btn-sm" />
-									</td>
-								</tr>
-								<tr>
-									<td>주소</td>
-									<td>
-										<input type="text" name="address" id="address" value="" style="width: 300px" readonly="readonly">
-									</td>
-								</tr>
-								<tr>
-									<td>상세주소</td>
-									<td>
-										<input type="text" name="address2" id="address2" value="" style="width: 300px" />
-									</td>
-								</tr>
-								<tr>
-									<td>가입 ip주소</td>
-									<td><span id="ip"></span></td>
-								</tr>
-								<tr>
-									<td>가입일</td>
-									<td><span id="inputDate"></span></td>
-								</tr>
-								<tr>
-									<td colspan="2" align="center">
-										<input type="button" value="변경" class="btn btn-warning btn-sm" id="btnUpdate" />
-									</td>
-								</tr>
+			if (tempPage != null) { // pagenation을 클릭 했을 때 1, 2, 3, 4등 해당 페이지 번호가 입력.
+				currentPage = Integer.parseInt(tempPage);
+			}
 
-							</table>
-						</td>
-					</tr>
+			int startNum = 1;
+			startNum = currentPage * pageScale - pageScale + 1;
+			// 5. 선택한 페이지의 끝 번호 구하기
+			int endNum = startNum + pageScale - 1;
+			
+			rDTO.setStartNum(startNum);
+			rDTO.setEndNum(endNum);
+			
+			List<BoardDTO> listBoard = bs.searchBoard(rDTO);
+
+			pageContext.setAttribute("totalCount", totalCount);
+			pageContext.setAttribute("pageScale", pageScale);
+			pageContext.setAttribute("totalPage", totalPage);
+			pageContext.setAttribute("startNum", startNum);
+			pageContext.setAttribute("endNum", endNum);
+			pageContext.setAttribute("currentPage", currentPage);
+			pageContext.setAttribute("listBoard", listBoard);
+			%>
+<%-- 			총 레코드의 수 : ${ totalCount }건<br> 
+			한 화면에 보여질 게시글의 수 : ${ pageScale }건<br> 
+			총 페이지 수 : ${ totalPage }장<br>
+			현재 페이지 : ${ currentPage }<br>
+			시작 숫자: ${ startNum }번<br>
+			끝 숫자: ${ endNum }번<br> --%>
+			
+			<div id="divBoardHeader">
+				<c:if test="${ not empty userInfo }">
+					<a href="boardWriteForm.jsp" class="btn btn-outline-primary btn-sm">글작성</a>
+				</c:if>
+			</div>
+			
+			<div id="divBoardContent" style="height: 500px;">
+				<table class="table table-hover">
+					<thead>
+						<tr>
+							<th style="width: 80px;">번호</th>
+							<th style="width: 400px;">제목</th>
+							<th style="width: 130px;">작성자</th>
+							<th style="width: 140px;">작성일</th>
+							<th style="width: 80px;">조회수</th>
+						</tr>
+					</thead>
+					<tbody>
+					
+						<c:if test="${ empty listBoard }">
+							<tr>
+								<td colspan="5" style="text-align: center;">
+									게시글이 없습니다.
+								</td>
+							</tr>
+						</c:if> 
+						
+						<c:forEach var="bDTO" items="${ listBoard }" varStatus="i">
+							<tr>
+								<td><c:out value="${ totalCount - (currentPage - 1) * pageScale - i.index }"/></td>
+								<td><a href="boardDetail.jsp?num=${ bDTO.num }&currentPage=${currentPage}" style="color: black;"><c:out value="${ bDTO.title }"/></a></td>
+								<td><c:out value="${ bDTO.id }"/></td>
+								<td><fmt:formatDate value='${ bDTO.inputDate }' pattern='yyyy-MM-dd kk:mm:ss'/></td>
+								<td><c:out value="${ bDTO.cnt }"/></td>
+							</tr>
+						</c:forEach>	
+					</tbody>
 				</table>
-			</form>
+			</div>
+			
+			<div id="divSearch" style="height: 80px;"></div>
+			
+			<div id="divPagenation" style="text-align: center;">
+				<c:forEach var="i" begin="1" end="${ totalPage }" step="1">
+					<a href="${ CommonURL }/board/boardList.jsp?currentPage=${ i }">[${ i }]</a>
+				</c:forEach>
+			</div>
+			
 		</div>
+		<!-- /.container -->
 		<!-- FOOTER -->
 		<footer class="container">
-			<c:import url="${CommonURL}/fragments/footer.jsp" />
+			<%-- <jsp:include page="../fragments/footer.jsp"/> --%>
+			<c:import url="${ CommonURL }/fragments/footer.jsp" />
 		</footer>
 	</main>
-	<script src="${CommonURL}/common/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" class="astro-vvvwv3sm"></script>
+	<script src="${ CommonURL }/common/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" class="astro-vvvwv3sm"></script>
 </body>
 </html>

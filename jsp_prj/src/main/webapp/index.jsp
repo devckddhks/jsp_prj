@@ -161,6 +161,9 @@
 			<%-- <jsp:include page="../fragments/carousel.jsp"/> --%>
 			<c:import url="${ CommonURL }/fragments/carousel.jsp" />
 		</div>
+		<div>
+			<a href="${ CommonURL }/board/boardList.jsp">게시판</a>
+		</div>
 		<!-- Marketing messaging and featurettes
   ================================================== -->
 		<!-- Wrap the rest of the page in another container to center all the content. -->
