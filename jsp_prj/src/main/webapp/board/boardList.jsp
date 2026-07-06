@@ -1,10 +1,11 @@
+<%@page import="kr.co.sist.util.BoardUtil"%>
 <%@page import="kr.co.sist.board.BoardDTO"%>
 <%@page import="java.util.List"%>
 <%@page import="kr.co.sist.board.BoardService"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ include file="../include/siteProperty.jsp"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
-<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
 <!DOCTYPE html>
 <html lang="en" data-bs-theme="auto">
 <head>
@@ -112,6 +113,32 @@ a {
 	text-decoration: none;
 }
 </style>
+<script type="text/javascript">
+	$(function() {
+		$("#keyword").keyup(function(evt) {
+			if (evt.which == 13) {
+				chkNull();
+			}
+		});
+
+		$("#btnSearch").click(chkNull);
+
+		// fieldNum에 값이 있다면 select의 옵션을 선택한 상태로 만들 수 있다.
+
+		$("#fieldNum").val("${empty param.fieldNum ? '0' : param.fieldNum}");
+	});
+
+	function chkNull() {
+		var keyword = $("#keyword").val();
+
+		if (keyword.trim() == "") {
+			alert("검색어를 입력해 주세요");
+			return;
+		}
+
+		$("#searchForm").submit();
+	}
+</script>
 </head>
 <body>
 	<svg xmlns="http://www.w3.org/2000/svg" class="d-none"> <symbol id="check2" viewBox="0 0 16 16"> <path d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z"></path> </symbol> <symbol id="circle-half" viewBox="0 0 16 16"> <path d="M8 15A7 7 0 1 0 8 1v14zm0 1A8 8 0 1 1 8 0a8 8 0 0 1 0 16z"></path> </symbol> <symbol id="moon-stars-fill" viewBox="0 0 16 16"> <path d="M6 .278a.768.768 0 0 1 .08.858 7.208 7.208 0 0 0-.878 3.46c0 4.021 3.278 7.277 7.318 7.277.527 0 1.04-.055 1.533-.16a.787.787 0 0 1 .81.316.733.733 0 0 1-.031.893A8.349 8.349 0 0 1 8.344 16C3.734 16 0 12.286 0 7.71 0 4.266 2.114 1.312 5.124.06A.752.752 0 0 1 6 .278z"></path> <path
@@ -161,33 +188,32 @@ a {
 	</header>
 	<main>
 		<div id="boardDiv" style="margin-top: 20px; padding: 10px;">
-		<jsp:useBean id="rDTO" class="kr.co.sist.board.RangeDTO" scope="page"/>
-		<jsp:setProperty property="*" name="rDTO"/>
+			<jsp:useBean id="rDTO" class="kr.co.sist.board.RangeDTO" scope="page" />
+			<jsp:setProperty property="*" name="rDTO" />
 			<%
 			BoardService bs = new BoardService();
 			// 1. 총 레코드 수
-			int totalCount = 0;
-			totalCount = bs.searchTotalCount();
+			int totalCount = bs.searchTotalCount(rDTO);
+			
 			// 2. 한 화면에 보여질 게시글의 수
-			int pageScale = 10;
+			int pageScale = bs.pageScale();
+			
 			// 3. 총 페이지 수
-			int totalPage = (int) Math.ceil((double) totalCount / pageScale);
+			int totalPage = bs.totalPage();
+			
 			// 4. 선택한 페이지의 시작 번호 구하기
 			String tempPage = request.getParameter("currentPage");
-			int currentPage = 1;
+			int currentPage = bs.currentPage(tempPage);
 
-			if (tempPage != null) { // pagenation을 클릭 했을 때 1, 2, 3, 4등 해당 페이지 번호가 입력.
-				currentPage = Integer.parseInt(tempPage);
-			}
-
-			int startNum = 1;
-			startNum = currentPage * pageScale - pageScale + 1;
-			// 5. 선택한 페이지의 끝 번호 구하기
-			int endNum = startNum + pageScale - 1;
+			int startNum = bs.startNum();
 			
+			
+			// 5. 선택한 페이지의 끝 번호 구하기
+			int endNum = bs.endNum();
+
 			rDTO.setStartNum(startNum);
 			rDTO.setEndNum(endNum);
-			
+
 			List<BoardDTO> listBoard = bs.searchBoard(rDTO);
 
 			pageContext.setAttribute("totalCount", totalCount);
@@ -198,19 +224,19 @@ a {
 			pageContext.setAttribute("currentPage", currentPage);
 			pageContext.setAttribute("listBoard", listBoard);
 			%>
-<%-- 			총 레코드의 수 : ${ totalCount }건<br> 
+			<%-- 총 레코드의 수 : ${ totalCount }건<br> 
 			한 화면에 보여질 게시글의 수 : ${ pageScale }건<br> 
 			총 페이지 수 : ${ totalPage }장<br>
 			현재 페이지 : ${ currentPage }<br>
 			시작 숫자: ${ startNum }번<br>
 			끝 숫자: ${ endNum }번<br> --%>
-			
+
 			<div id="divBoardHeader">
 				<c:if test="${ not empty userInfo }">
 					<a href="boardWriteForm.jsp" class="btn btn-outline-primary btn-sm">글작성</a>
 				</c:if>
 			</div>
-			
+
 			<div id="divBoardContent" style="height: 500px;">
 				<table class="table table-hover">
 					<thead>
@@ -223,36 +249,59 @@ a {
 						</tr>
 					</thead>
 					<tbody>
-					
+
 						<c:if test="${ empty listBoard }">
 							<tr>
-								<td colspan="5" style="text-align: center;">
-									게시글이 없습니다.
-								</td>
+								<td colspan="5" style="text-align: center;">게시글이 없습니다.</td>
 							</tr>
-						</c:if> 
-						
+						</c:if>
+
 						<c:forEach var="bDTO" items="${ listBoard }" varStatus="i">
 							<tr>
-								<td><c:out value="${ totalCount - (currentPage - 1) * pageScale - i.index }"/></td>
-								<td><a href="boardDetail.jsp?num=${ bDTO.num }&currentPage=${currentPage}" style="color: black;"><c:out value="${ bDTO.title }"/></a></td>
-								<td><c:out value="${ bDTO.id }"/></td>
-								<td><fmt:formatDate value='${ bDTO.inputDate }' pattern='yyyy-MM-dd kk:mm:ss'/></td>
-								<td><c:out value="${ bDTO.cnt }"/></td>
+								<c:set var="detailQueryString" value="num=${ bDTO.num }&currentPage=${currentPage}" />
+
+								<c:if test="${ not empty param.keyword }">
+									<c:set var="detailQueryString" value="${ detailQueryString }&fieldNum=${ param.fieldNum }&keyword=${ param.keyword }" />
+								</c:if>
+
+								<td>
+									<c:out value="${ totalCount - (currentPage - 1) * pageScale - i.index }" />
+								</td>
+								<td>
+									<a href="boardDetail.jsp?${ detailQueryString }" style="color: black;"><c:out value="${ bDTO.title }" /></a>
+								</td>
+								<td>
+									<c:out value="${ bDTO.id }" />
+								</td>
+								<td>
+									<fmt:formatDate value='${ bDTO.inputDate }' pattern='yyyy-MM-dd kk:mm:ss' />
+								</td>
+								<td>
+									<c:out value="${ bDTO.cnt }" />
+								</td>
 							</tr>
-						</c:forEach>	
+						</c:forEach>
 					</tbody>
 				</table>
 			</div>
-			
-			<div id="divSearch" style="height: 80px;"></div>
-			
-			<div id="divPagenation" style="text-align: center;">
-				<c:forEach var="i" begin="1" end="${ totalPage }" step="1">
-					<a href="${ CommonURL }/board/boardList.jsp?currentPage=${ i }">[${ i }]</a>
-				</c:forEach>
+
+			<div id="divSearchForm" style="height: 80px; text-align: center;">
+				<form action="boardList.jsp" id="searchForm" name="searchForm">
+
+					<select name="fieldNum" id="fieldNum" style="height: 30px;">
+						<option value="0">제목</option>
+						<option value="1">내용</option>
+						<option value="2">작성자</option>
+					</select>
+
+					<input type="text" name="keyword" id="keyword" value="${ param.keyword }"> <input type="text" style="display: none;"> <input type="button" value="검색" id="btnSearch" class="btn btn-success btn-sm">
+				</form>
 			</div>
-			
+
+			<div id="divPagenation">
+				<%=BoardUtil.pagination(currentPage, totalPage, "boardList.jsp", rDTO.getFieldNum(), rDTO.getKeyword())%>
+			</div>
+
 		</div>
 		<!-- /.container -->
 		<!-- FOOTER -->

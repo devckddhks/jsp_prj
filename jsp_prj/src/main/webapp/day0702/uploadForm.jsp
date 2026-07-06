@@ -1,9 +1,6 @@
-<%@page import="kr.co.sist.board.BoardDTO"%>
-<%@page import="kr.co.sist.board.BoardService"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ include file="../include/siteProperty.jsp"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
-<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
 <!DOCTYPE html>
 <html lang="en" data-bs-theme="auto">
 <head>
@@ -11,15 +8,11 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="description" content="">
 <meta name="generator" content="Astro v5.13.2">
-<title>글</title>
+<title>Carousel Template · Bootstrap v5.3</title>
 <meta name="theme-color" content="#712cf9">
 <%-- <jsp:include page="../include/external_file.jsp"/> --%>
 <%--<%@ include file="../include/external_file.jsp" %>--%>
 <c:import url="${ CommonURL }/include/external_file.jsp" />
-
-<link href="https://cdn.jsdelivr.net/npm/summernote@0.9.0/dist/summernote.min.css" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/summernote@0.9.0/dist/summernote.min.js"></script>
-
 <style>
 .bd-placeholder-img {
 	font-size: 1.125rem;
@@ -110,63 +103,6 @@
 	color: red;
 }
 </style>
-<script type="text/javascript">
-$(function() {
-	 $('#content').summernote({
-		toolbar: [
-			['style', ['bold', 'italic', 'underline', 'clear']],
-			['fontsize', ['fontsize']],
-			['color', ['color']]
-		],
-		placeholder: '자유롭게 글을 써주세요',
-		width: 400,
-		height: 300
-	 });
-	 
-	$("#btnUpdate").click(function() {
-		boardModify('u');		
-	});
-	 
-	$("#btnDelete").click(function() {
-		boardModify('d');
-	});
-});
-
-function chkNull() {
-	if($("#title").val().trim() == "") {
-		alert("제목은 필수 입력입니다");
-		return;
-	}
-}
-
-function boardModify(jobFlag) {
-	
-	var action = "deleteBoard";
-	
-	var msg = "삭제";
-	
-	if(jobFlag == 'u') {
-		action = "updateBoard";
-		msg = "수정";
-	}
-	
-	if (confirm("글을 " + msg + "하시겠습니까?")) {
-	// 폼 태그를 얻어서, action 속성을 변경하고, submit 실행
-		$("#readForm")[0].action = action + ".jsp";
-	
-		// 유효성 검증
-		if(msg == "수정") {
-			if($("#title").val().trim() == "") {
-				alert("제목은 필수 입력입니다.");
-				return;
-			}
-		}
-	
-		$("#readForm").submit();
-	}
-	
-}
-</script>
 </head>
 <body>
 	<svg xmlns="http://www.w3.org/2000/svg" class="d-none"> <symbol id="check2" viewBox="0 0 16 16"> <path d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z"></path> </symbol> <symbol id="circle-half" viewBox="0 0 16 16"> <path d="M8 15A7 7 0 1 0 8 1v14zm0 1A8 8 0 1 1 8 0a8 8 0 0 1 0 16z"></path> </symbol> <symbol id="moon-stars-fill" viewBox="0 0 16 16"> <path d="M6 .278a.768.768 0 0 1 .08.858 7.208 7.208 0 0 0-.878 3.46c0 4.021 3.278 7.277 7.318 7.277.527 0 1.04-.055 1.533-.16a.787.787 0 0 1 .81.316.733.733 0 0 1-.031.893A8.349 8.349 0 0 1 8.344 16C3.734 16 0 12.286 0 7.71 0 4.266 2.114 1.312 5.124.06A.752.752 0 0 1 6 .278z"></path> <path
@@ -211,89 +147,16 @@ function boardModify(jobFlag) {
 	<header data-bs-theme="dark">
 		<nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
 			<%-- <jsp:include page="../fragments/nav_bar.jsp"/> --%>
-			<c:import url="../fragments/nav_bar.jsp" />
+			<c:import url="${ CommonURL }/fragments/nav_bar.jsp" />
 		</nav>
 	</header>
 	<main>
-		<div id="divWriteForm"  style="margin-top: 20px;">
-			<%
-			String paramNum = request.getParameter("num");
-			
-			int num = 0;
-			
-			if(paramNum != null) {
-				
-				try{
-					num = Integer.parseInt(paramNum);
-				} catch (NumberFormatException nfe) {
-					nfe.printStackTrace();
-					
-					response.sendRedirect("../error/err_500.jsp");
-					return;
-				}
-			}
-			
-			BoardService bs = new BoardService();
-			pageContext.setAttribute("bDTO", bs.searchBoardDetail(num));
-			// 검색한 글의 cnt를 증가
-			boolean cntFlag = false;
-			
-			if(session.getAttribute("cntFlag" + paramNum) != null) {
-				cntFlag = (boolean) session.getAttribute("cntFlag" + paramNum);
-			}
-			
-			if(!cntFlag) {
-				bs.modifyCnt(num);
-				cntFlag = true;
-				session.setAttribute("cntFlag" + paramNum, cntFlag);
-			}
-			
-			
-			%>
-			<form name="readForm" method="post" id="readForm">
-				<input type="hidden" name="num" value="${ bDTO.num }">
-				<input type="hidden" name="currentPage" value="${ param.currentPage }">
-				<table>
-					<tr>
-						<th colspan="2" style="text-align: center;"><h3>아무말 대잔치 글 읽기</h3></th>
-					</tr>
-					<tr>
-						<td width="120px">제목</td>
-						<td><input type="text" name="title" id="title" style="width: 400px;" value="${ bDTO.title }"></td>
-					</tr>
-					<tr>
-						<td>내용</td>
-						<td><textarea name="content" id="content" style="width: 400px; height: 300px; resize: none; overflow: scroll;"><c:out value="${ bDTO.content }" escapeXml="true"/></textarea></td>
-					</tr>
-					<tr>
-						<td>작성자</td>
-						<td><c:out value="${ bDTO.id }님"/></td>
-					</tr>
-					<tr>
-						<td>ip</td>
-						<td><c:out value="${ bDTO.ip }" /></td>
-					</tr>
-					<tr>
-						<td>작성일</td>
-						<td><fmt:formatDate value="${ bDTO.inputDate }" pattern="yyyy-MM-dd EEEE kk:mm:ss" /></td>
-					</tr>
-					<tr>
-						<td colspan="2" style="text-align: center;">
-							<c:if test="${ userInfo.id eq bDTO.id }">
-								<input type="button" value="글수정" class="btn btn-primary btn-sm" id="btnUpdate">
-								<input type="button" value="글삭제" class="btn btn-success btn-sm" id="btnDelete">
-							</c:if>
-							
-							<c:set var="detailQueryString" value="currentPage=${ param.currentPage }"/>
-								
-							<c:if test="${ not empty param.keyword }">
-								<c:set var="detailQueryString" value="${ detailQueryString }&fieldNum=${ param.fieldNum }&keyword=${ param.keyword }"/>
-							</c:if>
-							
-							<a href="boardList.jsp?${ detailQueryString }" class="btn btn-warning btn-sm">리스트</a>
-						</td>
-					</tr>
-				</table>
+		<div style="margin-top: 50px;">
+			<form action="uploadProcess.jsp" method="post" enctype="multipart/form-data" name="frm" id="frm">
+				<label>업로더</label><input type="text" name="uploader">
+				<input type="file" name="upFile" id="upFile" style="display: none;">
+				<input type="button" value="파일선택" onclick="$('#upFile').trigger('click')">
+				<input type="submit" value="업로드">
 			</form>
 		</div>
 		<!-- /.container -->

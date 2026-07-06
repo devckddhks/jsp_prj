@@ -26,7 +26,7 @@ public class BoardDAO {
 		return bDAO;
 	}
 
-	public int selectTotalCount() throws SQLException {
+	public int selectTotalCount(RangeDTO rDTO) throws SQLException {
 		int totalCount = 0;
 
 		Connection con = null;
@@ -41,9 +41,19 @@ public class BoardDAO {
 			StringBuilder sql = new StringBuilder();
 			sql //
 					.append("	select count(*) cnt	") //
-					.append("	from board	"); //
+					.append("	from board 	"); //
+
+			if (rDTO.getKeyword() != null && !rDTO.getKeyword().isEmpty()) {
+				// 검색 키워드가 있을 때 쿼리문이 변경되어야 한다. (동적쿼리의 생성기준)
+				sql.append("	where instr(	").append(rDTO.getField()).append(", ?) != 0 	");
+			}
 
 			pstmt = con.prepareStatement(sql.toString());
+
+			if (rDTO.getKeyword() != null && !rDTO.getKeyword().isEmpty()) {
+				// 검색 키워드가 있을 때 바인드 변수에 값이 설정되어야 한다.
+				pstmt.setString(1, rDTO.getKeyword());
+			}
 
 			rs = pstmt.executeQuery();
 
@@ -74,13 +84,26 @@ public class BoardDAO {
 			sql //
 					.append("	select	num, id, title, input_date, cnt	") //
 					.append("	from	(select NUM, ID, TITLE, INPUT_DATE, CNT, row_number() over( order by input_date desc) rnum	") //
-					.append("			from board)	") //
-					.append("	where 	rnum between ? and ?	"); //
+					.append("			from board	"); //
+
+			if (rDTO.getKeyword() != null && !rDTO.getKeyword().isEmpty()) {
+				// 검색 키워드가 있을 때 쿼리문이 변경되어야 한다. (동적쿼리의 생성기준)
+				sql.append("	where instr(	").append(rDTO.getField()).append(", ?) != 0 	");
+			}
+
+			sql.append("	) where 	rnum between ? and ?	"); //
 
 			pstmt = con.prepareStatement(sql.toString());
 
-			pstmt.setInt(1, rDTO.getStartNum());
-			pstmt.setInt(2, rDTO.getEndNum());
+			int bindInd = 0;
+			
+			if (rDTO.getKeyword() != null && !rDTO.getKeyword().isEmpty()) {
+				// 검색 키워드가 있을 때 바인드 변수에 값이 설정되어야 한다.
+				pstmt.setString(++bindInd, rDTO.getKeyword());
+			} 
+				pstmt.setInt(++bindInd, rDTO.getStartNum());
+				pstmt.setInt(++bindInd, rDTO.getEndNum());
+			
 
 			rs = pstmt.executeQuery();
 
