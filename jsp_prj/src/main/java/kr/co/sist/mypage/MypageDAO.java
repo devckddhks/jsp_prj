@@ -67,4 +67,35 @@ public class MypageDAO {
 
 		return mDTO;
 	}
+
+	public int updateUserProfile(String id, String profile) throws SQLException {
+		int cnt = 0;
+
+		Connection con = null;
+		PreparedStatement pstmt = null;
+
+		GetConnection gc = GetConnection.getInstance();
+
+		try {
+			con = gc.getConn("dbcp");
+
+			StringBuilder sql = new StringBuilder();
+			sql //
+					.append("	update	web_member	") //
+					.append("	set		profile = ?	") //
+					.append("	where 	id = ?	");//
+
+			pstmt = con.prepareStatement(sql.toString());
+
+			pstmt.setString(1, profile);
+			pstmt.setString(2, id);
+
+			cnt = pstmt.executeUpdate();
+
+		} finally {
+			gc.dbClose(null, pstmt, con);
+		}
+
+		return cnt;
+	}
 }

@@ -1,14 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ include file="../include/siteProperty.jsp"%>
-<%-- <%@ include file="../include/loginCheck.jsp" %> --%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
-<%
-String sessionId = "test";
-String sessionName = "테스트";
-
-pageContext.setAttribute("userId", sessionId);
-pageContext.setAttribute("userName", sessionName);
-%>
 <!DOCTYPE html>
 <html lang="en" data-bs-theme="auto">
 <head>
@@ -16,15 +8,11 @@ pageContext.setAttribute("userName", sessionName);
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="description" content="">
 <meta name="generator" content="Astro v5.13.2">
-<title>글 작성</title>
+<title>Carousel Template · Bootstrap v5.3</title>
 <meta name="theme-color" content="#712cf9">
 <%-- <jsp:include page="../include/external_file.jsp"/> --%>
 <%--<%@ include file="../include/external_file.jsp" %>--%>
 <c:import url="${ CommonURL }/include/external_file.jsp" />
-
-<link href="https://cdn.jsdelivr.net/npm/summernote@0.9.0/dist/summernote.min.css" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/summernote@0.9.0/dist/summernote.min.js"></script>
-
 <style>
 .bd-placeholder-img {
 	font-size: 1.125rem;
@@ -115,32 +103,6 @@ pageContext.setAttribute("userName", sessionName);
 	color: red;
 }
 </style>
-<script type="text/javascript">
-$(function() {
-	 $('#content').summernote({
-		toolbar: [
-			['style', ['bold', 'italic', 'underline', 'clear']],
-			['fontsize', ['fontsize']],
-			['color', ['color']],
-			['insert', ['picture']]
-		],
-		placeholder: '자유롭게 글을 써주세요',
-		width: 400,
-		height: 300
-	 });
-	 
-	 $("#btnWrite").click(chkNull);
-});
-
-function chkNull() {
-	if($("#title").val().trim() == "") {
-		alert("제목은 필수 입력입니다");
-		return;
-	}
-	
-	$("#writeForm").submit();
-}
-</script>
 </head>
 <body>
 	<svg xmlns="http://www.w3.org/2000/svg" class="d-none"> <symbol id="check2" viewBox="0 0 16 16"> <path d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z"></path> </symbol> <symbol id="circle-half" viewBox="0 0 16 16"> <path d="M8 15A7 7 0 1 0 8 1v14zm0 1A8 8 0 1 1 8 0a8 8 0 0 1 0 16z"></path> </symbol> <symbol id="moon-stars-fill" viewBox="0 0 16 16"> <path d="M6 .278a.768.768 0 0 1 .08.858 7.208 7.208 0 0 0-.878 3.46c0 4.021 3.278 7.277 7.318 7.277.527 0 1.04-.055 1.533-.16a.787.787 0 0 1 .81.316.733.733 0 0 1-.031.893A8.349 8.349 0 0 1 8.344 16C3.734 16 0 12.286 0 7.71 0 4.266 2.114 1.312 5.124.06A.752.752 0 0 1 6 .278z"></path> <path
@@ -185,45 +147,13 @@ function chkNull() {
 	<header data-bs-theme="dark">
 		<nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
 			<%-- <jsp:include page="../fragments/nav_bar.jsp"/> --%>
-			<c:import url="../fragments/nav_bar.jsp" />
+			<c:import url="${ CommonURL }/fragments/nav_bar.jsp" />
 		</nav>
 	</header>
 	<main>
-		<div id="divWriteForm" style="margin-top: 20px;">
-			<form action="boardWriteFormProcess.jsp" enctype="multipart/form-data" method="post" name="writeForm" id="writeForm">
-				<table>
-					<tr>
-						<th colspan="2" style="text-align: center;"><h3>아무말 대잔치 글 쓰기</h3></th>
-					</tr>
-					<tr>
-						<td width="120px">제목</td>
-						<td><input type="text" name="title" id="title" style="width: 400px;"></td>
-					</tr>
-					<tr>
-						<td>내용</td>
-						<td><textarea name="content" id="content" style="width: 400px; height: 300px; resize: none; overflow: scroll;"></textarea></td>
-					</tr>
-					<tr>
-						<td>첨부파일</td>
-						<td><input type="file" name="upfile" id="upfile"></td>
-					</tr>
-					<tr>
-						<td>작성자</td>
-						<td><c:out value="${ userId }(${ userName })님"/></td>
-					</tr>
-					<tr>
-						<td>ip</td>
-						<td><%= request.getRemoteAddr() %></td>
-					</tr>
-					<tr>
-						<td colspan="2" style="text-align: center;">
-							<input type="button" value="글작성" class="btn btn-success btn-sm" id="btnWrite">
-							<a href="javascript:history.back()" class="btn btn-warning btn-sm">리스트</a>
-						</td>
-					</tr>
-				</table>
-			</form>
-		</div>
+		<%
+		response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "서버내부오류!");
+		%>
 		<!-- /.container -->
 		<!-- FOOTER -->
 		<footer class="container">

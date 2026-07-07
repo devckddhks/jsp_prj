@@ -109,10 +109,13 @@
 <script type="text/javascript">
 	$(function() {
 		//이미지 선택 버튼이 클릭
-		$("#btnPorfile").click(function() {
+		$("#btnProfile").click(function() {
 			//버튼을 클릭했을 때 input type="file"을 클릭한 이벤트를 발생
-			$("#profile").click();
+			$("#upProfile").click();
 		});//click
+		
+		// file을 선택하면 $("upProfile")의 값이 변경된다 => change event 발생
+		$("#upProfile").change(uploadProfile);
 		
 		$("#btnSearch").click(function() {
 			var param = {id: "${ userInfo.id }"};
@@ -127,6 +130,7 @@
 				},
 				success: function(jsonObj) {
 					$("#profileImg")[0].src = "${CommonURL}${uploadDir}/profile/" + jsonObj.profile;
+					$("#profile").val(jsonObj.profile);
 					$("#name").val(jsonObj.name);
 					$("#email").val(jsonObj.email);
 					$("#phone").val(jsonObj.phone);
@@ -140,6 +144,54 @@
 			});
 		});
 	});//ready
+	
+	function uploadProfile() {
+		var fileName = $("#upProfile").val();
+		
+		var ext = fileName.substring(fileName.lastIndexOf(".") + 1).toLowerCase();
+		// 선택한 파일의 확장자를 체크 (이미지만 가능 : jpg, jpeg, gif, png, bmp)
+		var allowedExt = "jpg,jpeg,gif,png,bmp".split(",");
+		
+		var allowedFlag = false;
+		
+		for (var i = 0; i < allowedExt.length; i++) {
+
+			if (ext == allowedExt[i]) {
+				allowedFlag = true;
+				break;
+			}
+			
+		}
+		
+		if (!allowedFlag) {
+			alert("프로필은 이미지만 선택해 주세요");
+			return;
+		}
+		
+		// 1. form 을 얻어서 FormData 객체에 할당 (parameter 전송 방식 -> binary 전송 방식)
+		var formData = new FormData($("#mypageForm")[0]);
+		
+		$.ajax({
+			url: "${CommonURL}/mypage/imgUpload.jsp",
+			type: "post",
+			contentType: false, // parameter 전송방식 -> binary 전송방식
+			processData: false, // queryString을 붙이지 않도록 설정
+			data: formData,
+			dataType: "json",
+			error: function(xhr) {
+				alert(xhr.status);
+			},
+			success: function(jsonObj) {
+				if (jsonObj.result) {
+					$("#profileImg")[0].src = "${CommonURL}${uploadDir}/profile/" + jsonObj.imgName;
+				} else {
+					alert(jsonObj.result_msg + "프로필 이미지가 정상적으로 업로드 되지 않았습니다.")
+				}
+			}
+			
+		});
+		
+	} // uploadProfile
 </script>
 </head>
 <body>
@@ -195,7 +247,9 @@
 				<table style="margin: 0px auto">
 					<tr>
 						<td style="vertical-align: top; width: 300px">
-							<img id="profileImg" src="${ CommonURL }${ uploadDir }/profile/default_profile.png" style="border-radius: 150px; width: 150px; height: 150px;" /><br> <input type="file" name="profile" id="profile" style="display: none;" /> <input type="button" value="이미지업로드" class="btn btn-success btn-sm" id="btnPorfile" />
+							<img id="profileImg" src="${ CommonURL }${ uploadDir }/profile/default_profile.png" style="border-radius: 150px; width: 150px; height: 150px;" /><br>
+								<input type="file" name="upProfile" id="upProfile" style="display: none;" /> 
+							<input type="button" value="이미지업로드" class="btn btn-success btn-sm" id="btnProfile" />
 						</td>
 						<td>
 							<h3>마이페이지- 정보수정</h3>

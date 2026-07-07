@@ -1,9 +1,17 @@
+<%@page import="java.util.UUID"%>
+<%@page import="java.io.IOException"%>
 <%@page import="com.oreilly.servlet.multipart.DefaultFileRenamePolicy"%>
 <%@page import="java.io.File"%>
 <%@page import="com.oreilly.servlet.MultipartRequest"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ include file="../include/siteProperty.jsp"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%
+if (!"POST".equals(request.getMethod())) {
+	response.sendRedirect("http://192.168.10.82/jsp_prj/day0702/uploadForm.jsp");
+	return;
+}
+%>
 <!DOCTYPE html>
 <html lang="en" data-bs-theme="auto">
 <head>
@@ -157,17 +165,77 @@
 		<div style="margin-top: 50px;">
 			<%
 			File saveDir = new File("C:/Users/user/git/jsp_prj/jsp_prj/src/main/webapp/upload");
+
+			MultipartRequest mr = null;
 			
-			// 업로드 파일의 최대 크기 설정 // 10Mbyte
 			if (saveDir.exists()) {
+				// 업로드 파일의 최대 크기 설정 // 10Mbyte
+				// int maxSize = 1024 * 1024 * 10;
+				
+				// 업로드 파일의 허용 크기를 크게 설정 // 100Mbyte
+				int uploadMaxSize = 1024 * 1024 * 100;
+				
+				// 업로드 파일의 최대 크기 설정 // 10Mbyte
 				int maxSize = 1024 * 1024 * 10;
 				
-				MultipartRequest mr = new MultipartRequest(request, saveDir.getAbsolutePath(), maxSize, "UTF-8", new DefaultFileRenamePolicy());
+
+				
+				try{
+					mr = new MultipartRequest(request, saveDir.getAbsolutePath(), uploadMaxSize, "UTF-8", 
+												new DefaultFileRenamePolicy());
+					
+					
+					// 10Mbyte를 초과하는 파일이 업로드 된다.
+					String fileName = mr.getFilesystemName("upFile");
+					File uploadFile = new File(saveDir.getAbsolutePath() + File.separator + fileName);
+					
+					// 업로드 파일이 이미지 였을 때에만 업로드 처리.
+					/* if (!mr.getContentType("upFile").contains("image/")) {
+						out.println("이미지만 업로드 가능합니다");
+						uploadFile.delete();
+						return;
+					} */
+					
+					boolean uploadFlag = false;
+					
+					// 업로드된 파일의 크기가 제한파일의 크기보다 크다면 삭제한다.
+					if (uploadFile.length() > maxSize) {
+						uploadFlag = uploadFile.delete();
+					}
+					
+					if (uploadFlag || !mr.getContentType("upFile").contains("image/")) {
+						out.println("업로드 파일의 크기는 10Mbyte 까지만 가능합니다. 또는 이미지만 업로드 가능 합니다.");
+					} else {
+						// 이미지가 업로드 되었을 때 알아볼 수 없는 이름으로 변경한다.
+						String fileName2 = uploadFile.getName();
+						
+						String ext = fileName2.substring(fileName2.lastIndexOf("."));
+						
+						File renameFile = new File(   uploadFile.getParent()
+													+ File.separator 
+													+ UUID.randomUUID().toString().replaceAll("-", "") 
+													+ ext);
+						
+						uploadFile.renameTo(renameFile);
+			%>
+						MultipartRequest 사용<br>
+						업로더 : <%= mr.getParameter("uploader") %><br>
+						파일명 : <%= mr.getParameter("upFile") %><br>
+						원본 파일명 : <%= mr.getOriginalFileName("upFile") %><br>
+						중복 파일명이 있을 때 파일명 : <%= mr.getFilesystemName("upFile") %><br>
+						저장된 파일 명 : <%= renameFile.getName() %>
+			<%
+					}
+					
+				} catch(IOException ie) {
+					out.println("파일 크기가 초과되었습니다.");
+					ie.printStackTrace();
+				}
 			}
 			
 			%>
-			업로더 : <%= request.getParameter("uploader") %><br>
-			파일명 : <%= request.getParameter("upFile") %><br>
+			
+			
 		</div>
 		<!-- FOOTER -->
 		<footer class="container">

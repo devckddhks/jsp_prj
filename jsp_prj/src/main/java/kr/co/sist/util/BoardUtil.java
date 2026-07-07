@@ -1,7 +1,10 @@
 package kr.co.sist.util;
 
+import java.io.File;
+import java.util.UUID;
+
 public class BoardUtil {
-	private static BoardUtil bUtil;
+	public static BoardUtil bUtil;
 
 	private BoardUtil() {
 	}
@@ -20,34 +23,34 @@ public class BoardUtil {
 
 		// 1. 한 화면에 보여줄 pagination의 수.
 		int pageNumber = 3;
-		
+
 		// 2. 한 화면에 보여줄 시작 페이지의 번호 ([1][2][3] => [1], [4][5][6] => [4])
 		int startPage = (currentPage - 1) / pageNumber * pageNumber + 1;
-		
+
 		// 3. 화면에 보여줄 마지막 번호 )1 -> 3, 4 -> 6
 		int endPage = ((startPage - 1) + pageNumber) / pageNumber * pageNumber;
-		
+
 		// 4. 총 페이지 수가 연산된 마지막 페이지 수보다 작다면, 총페이지수가 마지막 페이지 수로 설정되어야한다.
 		if (totalPage <= endPage) {
 			endPage = totalPage;
 		}
-		
+
 		StringBuilder pagination = new StringBuilder();
 		pagination.append("<ul class='pagination justify-content-center'>");
-		
+
 		// 5. 이전 페이지로 가기 위한 [<<] 기호
-		
+
 		StringBuilder prevMark = new StringBuilder();
-		
+
 		prevMark.append("<li class='page-item'><span class='page-link'>Previous</span></li>");
 
 		int movePage = 0;
 
 		if (currentPage > pageNumber) { // 4 > 3
 			movePage = startPage - 1;
-			
+
 			prevMark.delete(0, prevMark.length());
-			
+
 			prevMark.append("<li class='page-item'><a class='page-link' href='") //
 					.append(url).append("?currentPage=").append(movePage);
 
@@ -57,16 +60,16 @@ public class BoardUtil {
 
 			prevMark.append("'>Previous</a></li>");
 		}
-		
+
 		pagination.append(prevMark.toString());
 
 		// 6. 시작 페이지 번호부터 끝 페이지 번호까지 화면에 출력하기
 		movePage = startPage;
-		
+
 		StringBuilder pageLink = new StringBuilder();
 
 		while (movePage <= endPage) {
-			
+
 			if (movePage == currentPage) { // 현재 페이지는 링크를 설정하지 않는다.
 				pageLink.append("<li class='currentPage page-item page-link active'>").append(movePage).append("</li>");
 			} else {
@@ -94,9 +97,9 @@ public class BoardUtil {
 
 		if (totalPage > endPage) {
 			movePage = endPage + 1;
-			
+
 			nextMark.delete(0, nextMark.length());
-			
+
 			nextMark.append("<li class='page-item'><a class='nextMark page-link' href='") //
 					.append(url).append("?currentPage=").append(movePage);
 
@@ -112,4 +115,13 @@ public class BoardUtil {
 		return pagination.toString();
 	}
 
+	public static String uuidFile(File file) {
+		// 파일 명을 UUID를 사용하여 변경된 이름으로 반환.
+		String fileName = file.getName();
+		String ext 		= fileName.substring(fileName.lastIndexOf("."));
+		
+		String uuidName = UUID.randomUUID().toString().replaceAll("-", "") + ext;
+		
+		return uuidName;
+	}
 }

@@ -82,8 +82,8 @@ public class BoardDAO {
 
 			StringBuilder sql = new StringBuilder();
 			sql //
-					.append("	select	num, id, title, input_date, cnt	") //
-					.append("	from	(select NUM, ID, TITLE, INPUT_DATE, CNT, row_number() over( order by input_date desc) rnum	") //
+					.append("	select	num, id, title, input_date, cnt, upfile	") //
+					.append("	from	(select NUM, ID, TITLE, INPUT_DATE, CNT, UPFILE, row_number() over( order by input_date desc) rnum	") //
 					.append("			from board	"); //
 
 			if (rDTO.getKeyword() != null && !rDTO.getKeyword().isEmpty()) {
@@ -96,14 +96,13 @@ public class BoardDAO {
 			pstmt = con.prepareStatement(sql.toString());
 
 			int bindInd = 0;
-			
+
 			if (rDTO.getKeyword() != null && !rDTO.getKeyword().isEmpty()) {
 				// 검색 키워드가 있을 때 바인드 변수에 값이 설정되어야 한다.
 				pstmt.setString(++bindInd, rDTO.getKeyword());
-			} 
-				pstmt.setInt(++bindInd, rDTO.getStartNum());
-				pstmt.setInt(++bindInd, rDTO.getEndNum());
-			
+			}
+			pstmt.setInt(++bindInd, rDTO.getStartNum());
+			pstmt.setInt(++bindInd, rDTO.getEndNum());
 
 			rs = pstmt.executeQuery();
 
@@ -117,6 +116,7 @@ public class BoardDAO {
 				bDTO.setTitle(rs.getString("title"));
 				bDTO.setInputDate(rs.getDate("input_date"));
 				bDTO.setCnt(rs.getInt("cnt"));
+				bDTO.setUpfile(rs.getString("upfile"));
 
 				boardList.add(bDTO);
 			}
@@ -142,7 +142,7 @@ public class BoardDAO {
 
 			StringBuilder sql = new StringBuilder();
 			sql //
-					.append("	select	num, id, title, content, input_date, cnt, ip	") //
+					.append("	select	num, id, title, content, input_date, cnt, upfile, ip	") //
 					.append("	from 	board	") //
 					.append("	where 	num = ?	"); //
 
@@ -161,6 +161,7 @@ public class BoardDAO {
 				bDTO.setInputDate(rs.getDate("input_date"));
 				bDTO.setCnt(rs.getInt("cnt"));
 				bDTO.setIp(rs.getString("ip"));
+				bDTO.setUpfile(rs.getString("upfile"));
 
 				// content 추가
 				Clob clob = rs.getClob("content");
@@ -233,9 +234,21 @@ public class BoardDAO {
 			con = gc.getConn("dbcp");
 
 			StringBuilder sql = new StringBuilder();
-			sql //
-					.append("	insert into board	(num, id, title, content, ip)	") //
-					.append("	values				(seq_board.nextval, ?, ?, ?, ? )	"); //
+			sql.append("	insert into board	(num, id, title, content, ip	"); //
+			
+			boolean flag = bDTO.getUpfile() != null;
+			
+			if (flag) {
+				sql.append(", upfile	");
+			}
+			
+			sql.append(")	values				(seq_board.nextval, ?, ?, ?, ?	"); //
+			
+			if (flag) {
+				sql.append(", ?	");
+			}
+			
+			sql.append(")	");
 
 			pstmt = con.prepareStatement(sql.toString());
 
@@ -243,6 +256,10 @@ public class BoardDAO {
 			pstmt.setString(2, bDTO.getTitle());
 			pstmt.setString(3, bDTO.getContent());
 			pstmt.setString(4, bDTO.getIp());
+			
+			if (flag) {
+				pstmt.setString(5, bDTO.getUpfile());
+			}
 
 			pstmt.executeUpdate();
 

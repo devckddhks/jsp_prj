@@ -1,14 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ include file="../include/siteProperty.jsp"%>
-<%-- <%@ include file="../include/loginCheck.jsp" %> --%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
-<%
-String sessionId = "test";
-String sessionName = "테스트";
-
-pageContext.setAttribute("userId", sessionId);
-pageContext.setAttribute("userName", sessionName);
-%>
 <!DOCTYPE html>
 <html lang="en" data-bs-theme="auto">
 <head>
@@ -16,15 +8,11 @@ pageContext.setAttribute("userName", sessionName);
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="description" content="">
 <meta name="generator" content="Astro v5.13.2">
-<title>글 작성</title>
+<title>Carousel Template · Bootstrap v5.3</title>
 <meta name="theme-color" content="#712cf9">
 <%-- <jsp:include page="../include/external_file.jsp"/> --%>
 <%--<%@ include file="../include/external_file.jsp" %>--%>
 <c:import url="${ CommonURL }/include/external_file.jsp" />
-
-<link href="https://cdn.jsdelivr.net/npm/summernote@0.9.0/dist/summernote.min.css" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/summernote@0.9.0/dist/summernote.min.js"></script>
-
 <style>
 .bd-placeholder-img {
 	font-size: 1.125rem;
@@ -117,29 +105,22 @@ pageContext.setAttribute("userName", sessionName);
 </style>
 <script type="text/javascript">
 $(function() {
-	 $('#content').summernote({
-		toolbar: [
-			['style', ['bold', 'italic', 'underline', 'clear']],
-			['fontsize', ['fontsize']],
-			['color', ['color']],
-			['insert', ['picture']]
-		],
-		placeholder: '자유롭게 글을 써주세요',
-		width: 400,
-		height: 300
-	 });
-	 
-	 $("#btnWrite").click(chkNull);
-});
-
-function chkNull() {
-	if($("#title").val().trim() == "") {
-		alert("제목은 필수 입력입니다");
-		return;
-	}
+	$("#file").change(function(evt) {
+		var file = evt.target.files[0]; // fileDialog 에서 선택한 파일의 정보를 저장.
+		// 스트림 생성
+		var reader = new FileReader();
+		// onload 이벤트 설정
+		reader.onload = function(evt) {
+			$("#img").prop("src", evt.target.result); // Base64 인코딩된 이미지가 설정.
+		}
+		// 파일을 읽어들여 img 태그에 미리보기 설정
+		reader.readAsDataURL(file);
+	});
 	
-	$("#writeForm").submit();
-}
+	$("#btnImg2").click(function() {
+		alert($("#file").val());
+	});
+}); // ready
 </script>
 </head>
 <body>
@@ -185,45 +166,15 @@ function chkNull() {
 	<header data-bs-theme="dark">
 		<nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
 			<%-- <jsp:include page="../fragments/nav_bar.jsp"/> --%>
-			<c:import url="../fragments/nav_bar.jsp" />
+			<c:import url="${ CommonURL }/fragments/nav_bar.jsp" />
 		</nav>
 	</header>
-	<main>
-		<div id="divWriteForm" style="margin-top: 20px;">
-			<form action="boardWriteFormProcess.jsp" enctype="multipart/form-data" method="post" name="writeForm" id="writeForm">
-				<table>
-					<tr>
-						<th colspan="2" style="text-align: center;"><h3>아무말 대잔치 글 쓰기</h3></th>
-					</tr>
-					<tr>
-						<td width="120px">제목</td>
-						<td><input type="text" name="title" id="title" style="width: 400px;"></td>
-					</tr>
-					<tr>
-						<td>내용</td>
-						<td><textarea name="content" id="content" style="width: 400px; height: 300px; resize: none; overflow: scroll;"></textarea></td>
-					</tr>
-					<tr>
-						<td>첨부파일</td>
-						<td><input type="file" name="upfile" id="upfile"></td>
-					</tr>
-					<tr>
-						<td>작성자</td>
-						<td><c:out value="${ userId }(${ userName })님"/></td>
-					</tr>
-					<tr>
-						<td>ip</td>
-						<td><%= request.getRemoteAddr() %></td>
-					</tr>
-					<tr>
-						<td colspan="2" style="text-align: center;">
-							<input type="button" value="글작성" class="btn btn-success btn-sm" id="btnWrite">
-							<a href="javascript:history.back()" class="btn btn-warning btn-sm">리스트</a>
-						</td>
-					</tr>
-				</table>
-			</form>
-		</div>
+	<main style="padding: 50px;">
+		<img alt="" src="../upload/profile/default_img2.png" style="width: 80px; margin-bottom: 10px;" id="img"><br>
+		<input type="file" name="file" id="file" style="display: none;">
+		<input type="button" value="이미지 선택" id="btnImg" class="btn btn-success btn-sm" onclick="$('#file').click()">
+		<input type="button" value="이미지 사용" id="btnImg2" class="btn btn-primary btn-sm">
+		
 		<!-- /.container -->
 		<!-- FOOTER -->
 		<footer class="container">

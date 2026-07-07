@@ -1,3 +1,4 @@
+<%@page import="java.net.URLEncoder"%>
 <%@page import="kr.co.sist.util.BoardUtil"%>
 <%@page import="kr.co.sist.board.BoardDTO"%>
 <%@page import="java.util.List"%>
@@ -245,6 +246,7 @@ a {
 							<th style="width: 400px;">제목</th>
 							<th style="width: 130px;">작성자</th>
 							<th style="width: 140px;">작성일</th>
+							<th style="width: 80px;">첨부파일</th>
 							<th style="width: 80px;">조회수</th>
 						</tr>
 					</thead>
@@ -252,7 +254,7 @@ a {
 
 						<c:if test="${ empty listBoard }">
 							<tr>
-								<td colspan="5" style="text-align: center;">게시글이 없습니다.</td>
+								<td colspan="6" style="text-align: center;">게시글이 없습니다.</td>
 							</tr>
 						</c:if>
 
@@ -275,6 +277,11 @@ a {
 								</td>
 								<td>
 									<fmt:formatDate value='${ bDTO.inputDate }' pattern='yyyy-MM-dd kk:mm:ss' />
+								</td>
+								<td>
+									<c:if test="${ not empty bDTO.upfile }">
+										<a href="${ CommonURL }/board/download.jsp?file=${ bDTO.upfile }"><img alt="이미지" src="images/img.png" style="width: 20px; height: 20px; margin: 0px 25px;"></a>
+									</c:if>
 								</td>
 								<td>
 									<c:out value="${ bDTO.cnt }" />
@@ -300,6 +307,17 @@ a {
 
 			<div id="divPagenation">
 				<%=BoardUtil.pagination(currentPage, totalPage, "boardList.jsp", rDTO.getFieldNum(), rDTO.getKeyword())%>
+			</div>
+			
+			<div>
+				<a href="${ CommonURL }/board/download.jsp?file=34824632.txt">txt</a>
+				<a href="${ CommonURL }/board/download.jsp?file=exam0520.html">html</a>
+				<a href="${ CommonURL }/board/download.jsp?file=20260707_JSP.pptx">ppt</a>
+				<%
+				String fileName = "토끼.png";
+				String encode = URLEncoder.encode(fileName, "UTF-8");
+				%>
+				<a href="${ CommonURL }/board/download.jsp?file=<%=encode%>">img</a>
 			</div>
 
 		</div>

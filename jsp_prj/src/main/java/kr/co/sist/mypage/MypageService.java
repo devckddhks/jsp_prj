@@ -52,4 +52,18 @@ public class MypageService {
 		return jsonObj.toJSONString();
 	}
 
+	public boolean modifyProfile(String id, String profileImg) {
+		boolean flag = false;
+
+		MypageDAO mDAO = MypageDAO.getInstance();
+
+		try {
+			flag = mDAO.updateUserProfile(id, profileImg) == 1;
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+
+		return flag;
+	}
+
 }
