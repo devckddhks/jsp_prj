@@ -1,4 +1,3 @@
-<%@ page import="kr.co.sist.user.member.MemberDTO"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ include file="../include/siteProperty.jsp"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
@@ -104,9 +103,43 @@
 	color: red;
 }
 </style>
+<!-- 카카오맵 -->
+<script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=29bc5a4d3d43b53db6a5a00844ec191a"></script>
 <script type="text/javascript">
-	// var obj = new XMLHttpRequest();
-	// alert(obj);
+$(function() {
+	var container = document.getElementById('map'); //지도를 담을 영역의 DOM 레퍼런스
+	var sistPosition = new kakao.maps.LatLng(37.5047505, 127.0531719);
+	
+	var options = { //지도를 생성할 때 필요한 기본 옵션
+		center: sistPosition, //지도의 중심좌표.
+		level: 1 //지도의 레벨(확대, 축소 정도)
+	};
+	
+	var map = new kakao.maps.Map(container, options); //지도 생성 및 객체 리턴
+	
+	// 일반 지도와 스카이뷰로 지도 타입을 전환할 수 있는 지도타입 컨트롤을 생성합니다
+	var mapTypeControl = new kakao.maps.MapTypeControl();
+
+	// 지도에 컨트롤을 추가해야 지도위에 표시됩니다
+	// kakao.maps.ControlPosition은 컨트롤이 표시될 위치를 정의하는데 TOPRIGHT는 오른쪽 위를 의미합니다
+	map.addControl(mapTypeControl, kakao.maps.ControlPosition.TOPRIGHT);
+
+	// 지도 확대 축소를 제어할 수 있는  줌 컨트롤을 생성합니다
+	var zoomControl = new kakao.maps.ZoomControl();
+	map.addControl(zoomControl, kakao.maps.ControlPosition.RIGHT);
+	
+	// 마커가 표시될 위치입니다 
+	var markerPosition  = sistPosition; 
+
+	// 마커를 생성합니다
+	var marker = new kakao.maps.Marker({
+	    position: markerPosition
+	});
+
+	// 마커가 지도 위에 표시되도록 설정합니다
+	marker.setMap(map);
+	
+});
 </script>
 </head>
 <body>
@@ -151,34 +184,13 @@
 	</div>
 	<header data-bs-theme="dark">
 		<nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
-			<jsp:include page="/fragments/nav_bar.jsp"/>
-
-			<%-- <c:import url="${ CommonURL }/fragments/nav_bar.jsp" /> --%>
+			<%-- <jsp:include page="../fragments/nav_bar.jsp"/> --%>
+			<c:import url="${ CommonURL }/fragments/nav_bar.jsp" />
 		</nav>
 	</header>
 	<main>
-		<div id="myCarousel" class="carousel slide mb-6" data-bs-ride="carousel">
-			<%-- <jsp:include page="../fragments/carousel.jsp"/> --%>
-			<c:import url="${ CommonURL }/fragments/carousel.jsp" />
-		</div>
-		<div>
-			<a href="${ CommonURL }/board/boardList.jsp">게시판</a>
-		</div>
-		<!-- Marketing messaging and featurettes
-  ================================================== -->
-		<!-- Wrap the rest of the page in another container to center all the content. -->
-		<div class="container marketing">
-			<iframe src="https://www.google.com/maps/embed?pb=!1m5!3m3!1m2!1s0x357ca1c32408f9b7%3A0x4e3761a4f356d1eb!2z7IyN7Jqp6rWQ7Jyh7IS87YSw!5e0!3m2!1sko!2skr!4v1783910223198!5m2!1sko!2skr" width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="strict-origin-when-cross-origin"></iframe>
-			<!-- Three columns of text below the carousel -->
-			<%-- <jsp:include page="../fragments/bestProduct.jsp"/> --%>
-			<c:import url="${ CommonURL }/fragments/bestProduct.jsp" />
-			<!-- /.row -->
-			<!-- START THE FEATURETTES -->
-			<%-- <jsp:include page="../fragments/productList.jsp"/> --%>
-			<c:import url="${ CommonURL }/fragments/productList.jsp" />
-			<!-- /END THE FEATURETTES -->
-		</div>
-		<!-- /.container -->
+		<div id="map" style="width:100%;height:800px; margin: 10px auto;"></div>
+	
 		<!-- FOOTER -->
 		<footer class="container">
 			<%-- <jsp:include page="../fragments/footer.jsp"/> --%>

@@ -1,4 +1,3 @@
-<%@ page import="kr.co.sist.user.member.MemberDTO"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ include file="../include/siteProperty.jsp"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
@@ -104,10 +103,86 @@
 	color: red;
 }
 </style>
+<!-- 카카오맵 API -->
+<script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=29bc5a4d3d43b53db6a5a00844ec191a"></script>
 <script type="text/javascript">
-	// var obj = new XMLHttpRequest();
-	// alert(obj);
+$(function(){
+	var mapContainer = document.getElementById('map'), // 지도를 표시할 div  
+    mapOption = { 
+        center: new kakao.maps.LatLng(37.5047505, 127.0531719), // 지도의 중심좌표
+        level: 2 // 지도의 확대 레벨
+    };
+
+	var map = new kakao.maps.Map(mapContainer, mapOption); // 지도를 생성합니다
+	
+	// 지도를 클릭했을때 클릭한 위치에 마커를 추가하도록 지도에 클릭이벤트를 등록합니다
+/* 	kakao.maps.event.addListener(map, 'click', function(mouseEvent) {        
+	    // 클릭한 위치에 마커를 표시합니다 
+	    addMarker(mouseEvent.latLng);             
+	}); */
+	
+	// 지도에 표시된 마커 객체를 가지고 있을 배열입니다
+	var markers = [];
+	
+	// 마커 하나를 지도위에 표시합니다 
+	addMarker(new kakao.maps.LatLng(37.5047505, 127.0531719));
+	
+	// 마커를 생성하고 지도위에 표시하는 함수입니다
+	function addMarker(position) {
+	    
+	    // 마커를 생성합니다
+	    var marker = new kakao.maps.Marker({
+	        position: position
+	    });
+	
+	    // 마커가 지도 위에 표시되도록 설정합니다
+	    marker.setMap(map);
+	    
+	    // 생성된 마커를 배열에 추가합니다
+	    markers.push(marker);
+	    
+	    map.setCenter(position);
+	}
+	
+	//배열에 추가된 마커들을 지도에 표시하거나 삭제하는 함수입니다
+	function setMarkers(map) {
+	    for (var i = 0; i < markers.length; i++) {
+	        markers[i].setMap(map);
+	    }            
+	}
+	
+	// "마커 보이기" 버튼을 클릭하면 호출되어 배열에 추가된 마커를 지도에 표시하는 함수입니다
+	function showMarkers() {
+	    setMarkers(map)    
+	}
+	
+	// "마커 감추기" 버튼을 클릭하면 호출되어 배열에 추가된 마커를 지도에서 삭제하는 함수입니다
+	function hideMarkers() {
+	    setMarkers(null);    
+	}
+	
+	$("#btn").click(function() {
+		useMarker($("#loc")[0].selectedIndex);
+	});
+	
+	var latlng = new Array();
+	
+	latlng[0] = [37.5047505, 127.0531719];
+	latlng[1] = [37.504194315318856 , 127.05383932382108 ];
+	latlng[2] = [37.50373964811258 , 127.05308691392231 ];
+	latlng[3] = [37.50296994761228 , 127.05159918168002 ];
+	latlng[4] = [37.50192744057703 ,127.05566414018404];
+	
+	function useMarker(ind) {
+		hideMarkers();
+		addMarker(new kakao.maps.LatLng(latlng[ind][0], latlng[ind][1]));
+	}
+});
+
+
+
 </script>
+
 </head>
 <body>
 	<svg xmlns="http://www.w3.org/2000/svg" class="d-none"> <symbol id="check2" viewBox="0 0 16 16"> <path d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z"></path> </symbol> <symbol id="circle-half" viewBox="0 0 16 16"> <path d="M8 15A7 7 0 1 0 8 1v14zm0 1A8 8 0 1 1 8 0a8 8 0 0 1 0 16z"></path> </symbol> <symbol id="moon-stars-fill" viewBox="0 0 16 16"> <path d="M6 .278a.768.768 0 0 1 .08.858 7.208 7.208 0 0 0-.878 3.46c0 4.021 3.278 7.277 7.318 7.277.527 0 1.04-.055 1.533-.16a.787.787 0 0 1 .81.316.733.733 0 0 1-.031.893A8.349 8.349 0 0 1 8.344 16C3.734 16 0 12.286 0 7.71 0 4.266 2.114 1.312 5.124.06A.752.752 0 0 1 6 .278z"></path> <path
@@ -151,34 +226,23 @@
 	</div>
 	<header data-bs-theme="dark">
 		<nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
-			<jsp:include page="/fragments/nav_bar.jsp"/>
-
-			<%-- <c:import url="${ CommonURL }/fragments/nav_bar.jsp" /> --%>
+			<%-- <jsp:include page="../fragments/nav_bar.jsp"/> --%>
+			<c:import url="${ CommonURL }/fragments/nav_bar.jsp" />
 		</nav>
 	</header>
 	<main>
-		<div id="myCarousel" class="carousel slide mb-6" data-bs-ride="carousel">
-			<%-- <jsp:include page="../fragments/carousel.jsp"/> --%>
-			<c:import url="${ CommonURL }/fragments/carousel.jsp" />
-		</div>
 		<div>
-			<a href="${ CommonURL }/board/boardList.jsp">게시판</a>
+			<div id="map" style="width: 1000px;height:600px; margin: 0px auto"></div>
 		</div>
-		<!-- Marketing messaging and featurettes
-  ================================================== -->
-		<!-- Wrap the rest of the page in another container to center all the content. -->
-		<div class="container marketing">
-			<iframe src="https://www.google.com/maps/embed?pb=!1m5!3m3!1m2!1s0x357ca1c32408f9b7%3A0x4e3761a4f356d1eb!2z7IyN7Jqp6rWQ7Jyh7IS87YSw!5e0!3m2!1sko!2skr!4v1783910223198!5m2!1sko!2skr" width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="strict-origin-when-cross-origin"></iframe>
-			<!-- Three columns of text below the carousel -->
-			<%-- <jsp:include page="../fragments/bestProduct.jsp"/> --%>
-			<c:import url="${ CommonURL }/fragments/bestProduct.jsp" />
-			<!-- /.row -->
-			<!-- START THE FEATURETTES -->
-			<%-- <jsp:include page="../fragments/productList.jsp"/> --%>
-			<c:import url="${ CommonURL }/fragments/productList.jsp" />
-			<!-- /END THE FEATURETTES -->
-		</div>
-		<!-- /.container -->
+		위치
+		<select id="loc">
+			<option>쌍용교육센터</option>
+			<option>깐부치킨</option>
+			<option>백암순대</option>
+			<option>생활맥주</option>
+			<option>도미노피자</option>
+		</select>
+		<input type="button" value="위치보기" id="btn" class="btn btn-primary btn-sm">
 		<!-- FOOTER -->
 		<footer class="container">
 			<%-- <jsp:include page="../fragments/footer.jsp"/> --%>

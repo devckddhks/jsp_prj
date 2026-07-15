@@ -11,6 +11,13 @@
     <welcome-file>default.htm</welcome-file>
     <welcome-file>default.xhtml</welcome-file>
   </welcome-file-list>
+  <servlet>
+  	<servlet-name>
+  		123
+  	</servlet-name>
+  	<servlet-class>
+  	</servlet-class>
+  </servlet>
   
   <!-- 에러 페이지 설정 : project에 모든 JSP에서 에러가 발생하면 해당 페이지로 이동한다. -->
  <!--  <error-page>

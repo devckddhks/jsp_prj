@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"  ?> <!-- XML 선언부는 공백없이 첫 줄에서만 작성 가능. -->
+<messages> <!-- 최상위 부모노드 : 하나만 존재 -->
+	<message>안녕하세요??</message>
+	<message>안녕히가세요~~</message>
+	<message>좋은아침이비다.</message>
+	<!-- <message type="a"country="b">안녕하세요??</message> 속성은 공백으로 구분되어야한다. -->
+	<!-- <message>좋은아침이비다.</Message> 태그명은 대소문자를 구분한다. -->
+	<!-- <message> 시작태그와 닫힘 태그는 짝으로 존재해야한다. -->
+</messages>

@@ -23,7 +23,9 @@ public class ProfileImageService {
 		JSONObject jsonObj = new JSONObject();
 
 		// 저장경로
-		File saveDir = new File("C:/Users/user/git/jsp_prj/jsp_prj/src/main/webapp/upload/profile");
+		File saveDir = new File
+				("C:/webhome/upload/profile");
+				/* ("C:/Users/user/git/jsp_prj/jsp_prj/src/main/webapp/upload/profile"); */
 
 		// 최대 파일 크기(15Mbyte)
 		int maxSize = 1024 * 1024 * 15;

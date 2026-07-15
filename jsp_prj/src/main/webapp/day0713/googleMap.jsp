@@ -1,4 +1,3 @@
-<%@ page import="kr.co.sist.user.member.MemberDTO"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ include file="../include/siteProperty.jsp"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
@@ -104,10 +103,6 @@
 	color: red;
 }
 </style>
-<script type="text/javascript">
-	// var obj = new XMLHttpRequest();
-	// alert(obj);
-</script>
 </head>
 <body>
 	<svg xmlns="http://www.w3.org/2000/svg" class="d-none"> <symbol id="check2" viewBox="0 0 16 16"> <path d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z"></path> </symbol> <symbol id="circle-half" viewBox="0 0 16 16"> <path d="M8 15A7 7 0 1 0 8 1v14zm0 1A8 8 0 1 1 8 0a8 8 0 0 1 0 16z"></path> </symbol> <symbol id="moon-stars-fill" viewBox="0 0 16 16"> <path d="M6 .278a.768.768 0 0 1 .08.858 7.208 7.208 0 0 0-.878 3.46c0 4.021 3.278 7.277 7.318 7.277.527 0 1.04-.055 1.533-.16a.787.787 0 0 1 .81.316.733.733 0 0 1-.031.893A8.349 8.349 0 0 1 8.344 16C3.734 16 0 12.286 0 7.71 0 4.266 2.114 1.312 5.124.06A.752.752 0 0 1 6 .278z"></path> <path
@@ -151,34 +146,16 @@
 	</div>
 	<header data-bs-theme="dark">
 		<nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
-			<jsp:include page="/fragments/nav_bar.jsp"/>
-
-			<%-- <c:import url="${ CommonURL }/fragments/nav_bar.jsp" /> --%>
+			<%-- <jsp:include page="../fragments/nav_bar.jsp"/> --%>
+			<c:import url="${ CommonURL }/fragments/nav_bar.jsp" />
 		</nav>
 	</header>
 	<main>
-		<div id="myCarousel" class="carousel slide mb-6" data-bs-ride="carousel">
-			<%-- <jsp:include page="../fragments/carousel.jsp"/> --%>
-			<c:import url="${ CommonURL }/fragments/carousel.jsp" />
+		<div style="margin: 10px;">
+			<h2>오시는 길</h2>
+			<iframe src="https://www.google.com/maps/embed?pb=!1m5!3m3!1m2!1s0x357ca1c32408f9b7%3A0x4e3761a4f356d1eb!2z7IyN7Jqp6rWQ7Jyh7IS87YSw!5e0!3m2!1sko!2skr!4v1783910223198!5m2!1sko!2skr" width="800" height="600" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="strict-origin-when-cross-origin"></iframe>
 		</div>
-		<div>
-			<a href="${ CommonURL }/board/boardList.jsp">게시판</a>
-		</div>
-		<!-- Marketing messaging and featurettes
-  ================================================== -->
-		<!-- Wrap the rest of the page in another container to center all the content. -->
-		<div class="container marketing">
-			<iframe src="https://www.google.com/maps/embed?pb=!1m5!3m3!1m2!1s0x357ca1c32408f9b7%3A0x4e3761a4f356d1eb!2z7IyN7Jqp6rWQ7Jyh7IS87YSw!5e0!3m2!1sko!2skr!4v1783910223198!5m2!1sko!2skr" width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="strict-origin-when-cross-origin"></iframe>
-			<!-- Three columns of text below the carousel -->
-			<%-- <jsp:include page="../fragments/bestProduct.jsp"/> --%>
-			<c:import url="${ CommonURL }/fragments/bestProduct.jsp" />
-			<!-- /.row -->
-			<!-- START THE FEATURETTES -->
-			<%-- <jsp:include page="../fragments/productList.jsp"/> --%>
-			<c:import url="${ CommonURL }/fragments/productList.jsp" />
-			<!-- /END THE FEATURETTES -->
-		</div>
-		<!-- /.container -->
+
 		<!-- FOOTER -->
 		<footer class="container">
 			<%-- <jsp:include page="../fragments/footer.jsp"/> --%>

@@ -1,4 +1,5 @@
-<%@ page import="kr.co.sist.user.member.MemberDTO"%>
+<%@page import="day0713.UseURL"%>
+<%@page import="day0713.RssDTO"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ include file="../include/siteProperty.jsp"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
@@ -9,7 +10,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="description" content="">
 <meta name="generator" content="Astro v5.13.2">
-<title>Carousel Template · Bootstrap v5.3</title>
+<title>jtbc_rss</title>
 <meta name="theme-color" content="#712cf9">
 <%-- <jsp:include page="../include/external_file.jsp"/> --%>
 <%--<%@ include file="../include/external_file.jsp" %>--%>
@@ -105,8 +106,48 @@
 }
 </style>
 <script type="text/javascript">
-	// var obj = new XMLHttpRequest();
-	// alert(obj);
+function requestRss(url) {
+	var param = {url : url};
+	// https://news-ex.jtbc.co.kr/v1/get/rss${ item.rssLink }
+	$.ajax({
+		url: "createXml.jsp",
+		type: "get",
+		data: param,
+		dataType: "xml",
+		error: function(xhr) {
+			alert("문제가 발생하였습니다.");
+			console.log(xhr.status + "/" + xhr.statusText);
+		},
+		success: function(xmlDoc) {
+			var output = "";
+			var categoryNode = $(xmlDoc).find("channel > category");
+			var pubDateNode = $(xmlDoc).find("channel > pubDate");
+			
+			output += categoryNode.text() + "<br>";
+			output += "작성일 : " + pubDateNode.text() + "<br>";
+			
+			// 자식 아이템 노드들을 찾아서 하위 자식 노드을을 반복시켜 파싱
+			$(xmlDoc).find("item").each(function(ind, item) {
+				output += "<div>";
+				output += "  <table class='table table-hover'>";
+				output += "	   <tr>";
+				output += "	     <td style='width: 80px;'>" + (ind + 1) + "</td>";
+				output += "	     <td style='width: 350px;'><a href = '" + $(item).find("link").text() + "'>" + $(item).find("title").text() + "</a></td>";
+				output += "	     <td style='width: 150px;'>" + $(item).find("pubDate").text() + "</td>";
+				output += "	   </tr>";
+				output += "	   <tr>";
+				output += "	     <td></td>";
+				output += "	     <td colspan='2'>" + $(item).find("description").text() + "</td>";
+				output += "	   </tr>";
+				output += "	 </table>"; 
+				output += "</div>";
+			});
+			
+			$("#rssContent").html(output);
+		}
+	});
+	
+}
 </script>
 </head>
 <body>
@@ -151,34 +192,48 @@
 	</div>
 	<header data-bs-theme="dark">
 		<nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
-			<jsp:include page="/fragments/nav_bar.jsp"/>
-
-			<%-- <c:import url="${ CommonURL }/fragments/nav_bar.jsp" /> --%>
+			<%-- <jsp:include page="../fragments/nav_bar.jsp"/> --%>
+			<c:import url="${ CommonURL }/fragments/nav_bar.jsp" />
 		</nav>
 	</header>
 	<main>
-		<div id="myCarousel" class="carousel slide mb-6" data-bs-ride="carousel">
-			<%-- <jsp:include page="../fragments/carousel.jsp"/> --%>
-			<c:import url="${ CommonURL }/fragments/carousel.jsp" />
+		<div id="rssHeader">
+		<%
+			RssDTO[] rssArr = {new RssDTO("속보", "/newsflesh"),
+								new RssDTO("이슈 Top10", "/issue"),
+								new RssDTO("정치", "/section/politics"),
+								new RssDTO("경제", "/section/economy"),
+								new RssDTO("국제", "/section/international"),
+								new RssDTO("사회", "/section/society"),
+								new RssDTO("문화", "/section/international"),
+								new RssDTO("연예", "/section/entertainment"),
+								new RssDTO("스포츠", "/section/sports"),
+								new RssDTO("날씨", "/section/weather")};
+		
+			pageContext.setAttribute("rssArr", rssArr);
+		%>
+		
+		<table class="table">
+			<tr>
+				<c:forEach var="item" items="${ rssArr }">
+					<td>
+						<a href="javascript:requestRss('${ item.rssLink }')"><c:out value="${ item.title }"/></a>
+						<%-- <a href="jtbc_rss.jsp?link=${ item.rssLink }"><c:out value="${ item.title }"/></a> --%>
+					</td>
+				</c:forEach>
+			</tr>
+		</table>
 		</div>
-		<div>
-			<a href="${ CommonURL }/board/boardList.jsp">게시판</a>
-		</div>
-		<!-- Marketing messaging and featurettes
-  ================================================== -->
-		<!-- Wrap the rest of the page in another container to center all the content. -->
-		<div class="container marketing">
-			<iframe src="https://www.google.com/maps/embed?pb=!1m5!3m3!1m2!1s0x357ca1c32408f9b7%3A0x4e3761a4f356d1eb!2z7IyN7Jqp6rWQ7Jyh7IS87YSw!5e0!3m2!1sko!2skr!4v1783910223198!5m2!1sko!2skr" width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="strict-origin-when-cross-origin"></iframe>
-			<!-- Three columns of text below the carousel -->
-			<%-- <jsp:include page="../fragments/bestProduct.jsp"/> --%>
-			<c:import url="${ CommonURL }/fragments/bestProduct.jsp" />
-			<!-- /.row -->
-			<!-- START THE FEATURETTES -->
-			<%-- <jsp:include page="../fragments/productList.jsp"/> --%>
-			<c:import url="${ CommonURL }/fragments/productList.jsp" />
-			<!-- /END THE FEATURETTES -->
-		</div>
-		<!-- /.container -->
+		<div id="rssContent">    
+			<c:if test="${ not empty param.link }">
+			https://news-ex.jtbc.co.kr/v1/get/rss${ param.link }
+			<%
+			String url = request.getParameter("link");
+			UseURL uURL = new UseURL();
+			uURL.setUrl(url);
+			%>
+			</c:if>          
+		</div>                                                                                                                   
 		<!-- FOOTER -->
 		<footer class="container">
 			<%-- <jsp:include page="../fragments/footer.jsp"/> --%>

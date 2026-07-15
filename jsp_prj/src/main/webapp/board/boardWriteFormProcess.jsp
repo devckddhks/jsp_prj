@@ -30,7 +30,9 @@ if ("GET".equals(request.getMethod())) {
 <jsp:setProperty property="ip" name="bDTO" value="<%=request.getRemoteAddr()%>" />
 <%
 // request는 web parameter를 받을 수 없다.
-File saveDir = new File("C:/Users/user/git/jsp_prj/jsp_prj/src/main/webapp/upload");
+File saveDir = new File
+					("C:/webhome/upload/profile");
+					/* ("C:/Users/user/git/jsp_prj/jsp_prj/src/main/webapp/upload"); */
 int maxSize = 1024 * 1024 * 10; // 업로드 파일의 크기
 int uploadMaxSize = 1024 * 1024 * 50; // 업로드 파일의 크기
 
